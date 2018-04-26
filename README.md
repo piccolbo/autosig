@@ -15,7 +15,7 @@ from autosig import autosig, signature, Signature, param
 
 
 # define a class with @signature decorator inheriting from a subclass of
-# Signature (I know, a little redundant)
+# Signature (I know, a little redundant in this case)
 # x and y are parameters with no special properties
 @signature
 class BinaryOp(Signature):
