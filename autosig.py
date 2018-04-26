@@ -8,6 +8,7 @@ __all__ = "Signature signature autosig param".split()
 
 signature = attrs
 
+
 @attrs
 class Signature:
     """Base class for signatures."""
@@ -25,16 +26,6 @@ class Signature:
 
     def default(self):
         pass
-
-
-# def signature(Base=Signature):
-#     def decorator(decoratee):
-#         @attrs
-#         class Decorated(Base, decoratee):
-#             pass
-#
-#         return Decorated
-#     return decorator
 
 
 def autosig(sig):
