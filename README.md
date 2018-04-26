@@ -10,8 +10,7 @@ Since a signature is modeled with class, inheritance can be used to capture comm
 
 
 ```python
-from autosig import autosig, signature, Signature, param
-
+from autosig import *
 
 
 # define a class with @signature decorator inheriting from a subclass of
