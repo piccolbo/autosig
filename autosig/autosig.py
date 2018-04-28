@@ -4,7 +4,7 @@ from attr import attrib as param
 from attr import asdict
 from functools import wraps
 
-__all__ = "Signature signature autosig param".split()
+__all__ = ["Signature", "signature", "autosig", "param"]
 
 
 @signature
