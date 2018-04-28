@@ -9,5 +9,8 @@ attr = "*"
 
 [dev-packages]
 hypothesis = "*"
+pytest = "*"
+twine = "*"
+sphinx = "*"
 
 [requires]
