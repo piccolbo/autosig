@@ -26,12 +26,12 @@ class Signature:
         pass
 
 
-def autosig(sig):
-    """Decorator to attach signatures to functions.
+def autosig(Sig):
+    """Decorate  functions to attach signatures.
 
     Parameters
     ----------
-    sig : A subclass of Signature
+    Sig : A subclass of Signature
         A class with one member per parameter, initialized with a call to param
 
     Returns

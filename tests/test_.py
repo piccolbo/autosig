@@ -31,7 +31,8 @@ def signatures():
 @given(sig=signatures())
 def test_sig_checks(sig):
     """Autosig-decorated functions accept a compatible set of arguments."""
-    @autosig(sig=sig)
+
+    @autosig(Sig=sig)
     def f(*args, **kwargs):
         pass
 
@@ -41,7 +42,8 @@ def test_sig_checks(sig):
 @given(sig1=signatures(), sig2=signatures())
 def test_sig_doesnt_check(sig1, sig2):
     """Autosig-decorated functions fail on an incompatible set of arguments."""
-    @autosig(sig=sig1)
+
+    @autosig(Sig=sig1)
     def f(*args, **kwargs):
         pass
 
