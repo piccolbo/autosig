@@ -2,6 +2,8 @@
 Autosig
 =======
 
+**Experimental**
+
 Autosig allows to create classes that describe signatures of functions and common processing of arguments. This allows to:
 
 * Model functions that share the same signature
