@@ -37,8 +37,8 @@ def autosig(Sig):
     Returns
     -------
     function
-        The decorated function, will intialize,
-        convert, and validate its arguments.
+        The decorated function, will intialize, convert, and
+        validate its arguments.
 
     """
 
