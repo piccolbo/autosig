@@ -3,6 +3,7 @@ from attr import attrs as signature
 from attr import attrib as param
 from attr import asdict
 from functools import wraps
+import inspect
 
 __all__ = ["Signature", "signature", "autosig", "param"]
 
@@ -45,7 +46,7 @@ def autosig(Sig):
     def decorator(f):
         @wraps(f)
         def wrapped(*args, **kwargs):
-            params = sig(*args, **kwargs)
+            params = Sig(**inspect.getcallargs(f, *args, **kwargs))
             params.validate()
             return f(**asdict(params))
 
