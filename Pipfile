@@ -4,10 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-attrs = ">=18.1.0"
+"e1839a8" = {path = ".", editable = true}
 
 [dev-packages]
-"e1839a8" = {path = ".", editable = true}
 hypothesis = ">=3.69.9"
 pytest = ">=3.7.3"
 twine = ">=1.11.0"
