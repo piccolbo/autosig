@@ -44,6 +44,16 @@ def autosig(Sig):
     """
 
     def decorator(f):
+        f_params = inspect.signature(f).parameters
+        Sig_params = inspect.signature(Sig).parameters
+        assert f_params == Sig_params, "\n".join([
+            "Mismatched signatures:",
+            str(f),
+            str(f_params),
+            str(Sig),
+            str(Sig_params)
+        ])
+
         @wraps(f)
         def wrapped(*args, **kwargs):
             params = Sig(**inspect.getcallargs(f, *args, **kwargs))
