@@ -2,6 +2,22 @@
 Autosig
 =======
 
+
+.. image:: https://img.shields.io/pypi/v/autosig.svg
+        :target: https://pypi.python.org/pypi/autosig
+
+.. image:: https://img.shields.io/travis/piccolbo/autosig.svg
+        :target: https://travis-ci.org/piccolbo/autosig
+
+.. image:: https://readthedocs.org/projects/autosig/badge/?version=latest
+        :target: https://autosig.readthedocs.io/en/latest/?badge=latest
+        :alt: Documentation Status
+
+
+.. image:: https://pyup.io/repos/github/piccolbo/autosig/shield.svg
+     :target: https://pyup.io/repos/github/piccolbo/autosig/
+     :alt: Updates
+
 **Experimental**
 
 Autosig allows to create classes that describe signatures of functions and common processing of arguments. This allows to:
