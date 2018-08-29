@@ -8,7 +8,7 @@ from autosig import Signature, autosig
 
 # hypothesis strategy for identifiers
 # min_size is 10 to avoid hitting reserved words by mistake
-identifiers = partial(text, alphabet=ascii_letters, min_size=10)
+identifiers = partial(text, alphabet=ascii_letters, min_size=5, max_size=10)
 
 
 def signatures():
@@ -29,24 +29,27 @@ def signatures():
 
 
 @given(sig=signatures())
-def test_sig_checks(sig):
+def test_decorated_call(sig):
     """Autosig-decorated functions accept a compatible set of arguments."""
 
-    @autosig(Sig=sig)
-    def f(*args, **kwargs):
-        pass
-
-    f(**asdict(sig()))
+    autosig(sig)(sig)(**asdict(sig()))
 
 
 @given(sig1=signatures(), sig2=signatures())
-def test_sig_doesnt_check(sig1, sig2):
-    """Autosig-decorated functions fail on an incompatible set of arguments."""
+def test_decorator_fails(sig1, sig2):
+    """Autosig-decorated functions fail on an incompatible signature"""
+    deco = autosig(sig1)
+    try:
+        deco(sig2)
+    except Exception:
+        return
+    raise Exception
 
-    @autosig(Sig=sig1)
-    def f(*args, **kwargs):
-        pass
 
+@given(sig1=signatures(), sig2=signatures())
+def test_decorated_call_fails(sig1, sig2):
+    """Autosig-decorated functions fail on a call with incompatible arguments."""
+    f = autosig(sig1)(sig1)
     try:
         f(**asdict(sig2()))
     except Exception:
