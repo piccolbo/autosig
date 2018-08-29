@@ -56,7 +56,8 @@ def autosig(Sig):
 
         @wraps(f)
         def wrapped(*args, **kwargs):
-            params = Sig(**inspect.getcallargs(f, *args, **kwargs))
+            params = Sig(
+                **inspect.signature(f).bind(*args, **kwargs).arguments)
             params.validate()
             return f(**asdict(params))
 
