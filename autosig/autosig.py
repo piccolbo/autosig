@@ -1,11 +1,49 @@
 """Implementation of autosig."""
 from attr import attrs as signature
-from attr import attrib as param
-from attr import asdict
+from attr import attrib, asdict, NOTHING, fields_dict
 from functools import wraps
 import inspect
 
 __all__ = ["Signature", "signature", "autosig", "param"]
+
+AUTOSIG_DOCSTRING = "__autosig_docstring__"
+
+
+def param(
+        default=NOTHING,
+        validator=None,
+        repr=True,
+        cmp=True,
+        hash=None,
+        init=True,
+        convert=None,
+        metadata=None,
+        type=None,
+        converter=None,
+        factory=None,
+        docstring="",
+):
+    """See below."""
+    if metadata is None:
+        metadata = {}
+    metadata[AUTOSIG_DOCSTRING] = docstring
+    return attrib(
+        default=default,
+        validator=validator,
+        repr=repr,
+        cmp=cmp,
+        hash=hash,
+        init=init,
+        convert=convert,
+        metadata=metadata,
+        type=type,
+        converter=converter,
+        factory=factory,
+    )
+
+
+# TODO:fix docs
+param.__doc__ = attrib.__doc__
 
 
 @signature
@@ -13,17 +51,17 @@ class Signature:
     """Base class for signatures."""
 
     def validate(self):
-        """Short summary.
+        """Validate arguments as a whole.
 
-        Returns
-        -------
-        type
-            Description of returned object.
-
+        Per-argument validation is done with `param`
         """
-        return True
+        pass
 
     def default(self):
+        """Provide defaults that depend on the value of other arguments.
+
+        Per-argument defaults are set with `param`
+        """
         pass
 
 
@@ -58,8 +96,22 @@ def autosig(Sig):
         def wrapped(*args, **kwargs):
             params = Sig(
                 **inspect.signature(f).bind(*args, **kwargs).arguments)
+            params.default()
             params.validate()
             return f(**asdict(params))
+
+        wrapped.__doc__ = wrapped.__doc__ or """Short summary.
+
+
+            Returns
+            -------
+            type
+                Description of returned object.
+
+            """
+        wrapped.__doc__ += "\nParameters\n---------\n" + "\n".join([
+            v.metadata[AUTOSIG_DOCSTRING] for k, v in fields_dict(Sig).items()
+        ])
 
         return wrapped
 

@@ -1,31 +1,48 @@
 """Tests for autosig."""
 from hypothesis import given
 from hypothesis.strategies import builds, text, dictionaries, just
-from string import ascii_letters
-from attr import make_class, asdict, attrib
+from string import ascii_letters, punctuation
+from attr import make_class, asdict
 from functools import partial
-from autosig import Signature, autosig
+from autosig import Signature, autosig, param
 
 # hypothesis strategy for identifiers
 # min_size is 10 to avoid hitting reserved words by mistake
 identifiers = partial(text, alphabet=ascii_letters, min_size=5, max_size=10)
+docstrings = partial(
+    text,
+    alphabet=ascii_letters + punctuation + " \n",
+    min_size=25,
+    max_size=50)
 
 
-def signatures():
-    """Short summary.
+def params():
+    """Generate params.
 
     Returns
     -------
-    type
-        Description of returned object.
+    Hypothesis strategy
+        Strategy to generate params.
 
     """
-    return builds(
+    return builds(param, default=text(), docstring=docstrings())
+
+
+def signatures():
+    """Generate signatures.
+
+    Returns
+    -------
+    Hypothesis strategy
+        Strategy to generate signatures.
+
+    """
+    a_class = builds(
         make_class,
         name=identifiers(),
-        attrs=dictionaries(
-            keys=identifiers(), values=just(attrib(default=True)), min_size=3),
+        attrs=dictionaries(keys=identifiers(), values=params(), min_size=3),
         bases=just((Signature, )))
+    return a_class
 
 
 @given(sig=signatures())
@@ -37,7 +54,7 @@ def test_decorated_call(sig):
 
 @given(sig1=signatures(), sig2=signatures())
 def test_decorator_fails(sig1, sig2):
-    """Autosig-decorated functions fail on an incompatible signature"""
+    """Autosig-decorated functions fail on an incompatible signature."""
     deco = autosig(sig1)
     try:
         deco(sig2)
