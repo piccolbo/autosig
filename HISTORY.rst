@@ -2,6 +2,12 @@
 History
 =======
 
+
+0.3.0 (2018-08-30)
+-----------------
+
+* Compose docstring from param docstrings
+
 0.2.3 (2018-08-28)
 
 * Better and passing tests.
