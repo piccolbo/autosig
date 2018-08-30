@@ -1,10 +1,10 @@
 """Tests for autosig."""
-from hypothesis import given
+from attr import make_class, asdict
+from autosig import Signature, autosig, param
+from functools import partial
+from hypothesis import given, settings, HealthCheck, unlimited
 from hypothesis.strategies import builds, text, dictionaries, just
 from string import ascii_letters, punctuation
-from attr import make_class, asdict
-from functools import partial
-from autosig import Signature, autosig, param
 
 # hypothesis strategy for identifiers
 # min_size is 10 to avoid hitting reserved words by mistake
@@ -45,6 +45,7 @@ def signatures():
     return a_class
 
 
+@settings(timeout=unlimited, suppress_health_check=[HealthCheck.too_slow])
 @given(sig=signatures())
 def test_decorated_call(sig):
     """Autosig-decorated functions accept a compatible set of arguments."""
@@ -52,6 +53,7 @@ def test_decorated_call(sig):
     autosig(sig)(sig)(**asdict(sig()))
 
 
+@settings(timeout=unlimited, suppress_health_check=[HealthCheck.too_slow])
 @given(sig1=signatures(), sig2=signatures())
 def test_decorator_fails(sig1, sig2):
     """Autosig-decorated functions fail on an incompatible signature."""
@@ -63,6 +65,7 @@ def test_decorator_fails(sig1, sig2):
     raise Exception
 
 
+@settings(timeout=unlimited, suppress_health_check=[HealthCheck.too_slow])
 @given(sig1=signatures(), sig2=signatures())
 def test_decorated_call_fails(sig1, sig2):
     """Autosig-decorated functions fail on a call with incompatible arguments."""
