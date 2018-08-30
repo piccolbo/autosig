@@ -109,8 +109,9 @@ def autosig(Sig):
                 Description of returned object.
 
             """
-        wrapped.__doc__ += "\nParameters\n---------\n" + "\n".join([
-            v.metadata[AUTOSIG_DOCSTRING] for k, v in fields_dict(Sig).items()
+        wrapped.__doc__ += "\n\nParameters\n---------\n" + "\n".join([
+            k + ": " + v.metadata[AUTOSIG_DOCSTRING]
+            for k, v in fields_dict(Sig).items()
         ])
 
         return wrapped
