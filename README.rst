@@ -9,6 +9,9 @@ Autosig
 .. image:: https://img.shields.io/travis/piccolbo/autosig.svg
         :target: https://travis-ci.org/piccolbo/autosig
 
+.. image:: https://codecov.io/gh/piccolbo/autosig/branch/master/graph/badge.svg
+        :target: https://codecov.io/gh/codecov/example-python
+
 .. image:: https://readthedocs.org/projects/autosig/badge/?version=latest
         :target: https://autosig.readthedocs.io/en/latest/?badge=latest
         :alt: Documentation Status
