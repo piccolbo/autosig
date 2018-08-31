@@ -15,7 +15,7 @@ install: make install-dev
 
 # Command to run tests, e.g. python setup.py test
 script:
-  - make test
+  - make test  --cov=autosig/
 
 after_success:
   - codecov
