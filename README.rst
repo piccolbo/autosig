@@ -21,7 +21,6 @@ Autosig
      :target: https://pyup.io/repos/github/piccolbo/autosig/
      :alt: Updates
 
-**Experimental**
 
 Autosig allows to create classes that describe signatures of functions and common processing of arguments. This allows to:
 
