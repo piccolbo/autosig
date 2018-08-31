@@ -14,8 +14,7 @@ env:
 install: make install-dev
 
 # Command to run tests, e.g. python setup.py test
-script:
-  - make test
+script: make test
 
 after_success:
   - pipenv run codecov
