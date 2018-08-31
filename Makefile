@@ -54,7 +54,7 @@ lint: ## check style with flake8
 	flake8 autosig tests
 
 test: ## run tests quickly with the default Python
-	pipenv run -- py.test 
+	pipenv run -- py.test  --cov=autosig/
 
 test-all: ## run tests on every Python version with tox
 	tox
