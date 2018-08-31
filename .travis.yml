@@ -15,10 +15,10 @@ install: make install-dev
 
 # Command to run tests, e.g. python setup.py test
 script:
-  - make test 
+  - make test
 
 after_success:
-  - codecov
+  - pipenv run codecov
 
 # Assuming you have installed the travis-ci CLI tool, after you
 # create the Github repo and add it to Travis, run the
