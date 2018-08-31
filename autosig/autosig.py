@@ -33,7 +33,15 @@ def param(
 
 
 # TODO:fix docs
-param.__doc__ = attrib.__doc__
+param.__doc__ = attrib.__doc__ + """
+
+   ..  warning::
+
+        this doc is take straight out of package attr. `param` works exactly
+        like `attrib` but the argument metadata is required to be a dict or
+        equivalent and there is an additional argument `docstring` which
+        contains the docstring for the param being defined, which will be
+        combined with other elements to form complete funcion docstrings. """
 
 
 @signature
