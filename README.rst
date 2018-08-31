@@ -10,7 +10,7 @@ Autosig
         :target: https://travis-ci.org/piccolbo/autosig
 
 .. image:: https://codecov.io/gh/piccolbo/autosig/branch/master/graph/badge.svg
-        :target: https://codecov.io/gh/codecov/example-python
+        :target: https://codecov.io/gh/piccolbo/autosig
 
 .. image:: https://readthedocs.org/projects/autosig/badge/?version=latest
         :target: https://autosig.readthedocs.io/en/latest/?badge=latest
