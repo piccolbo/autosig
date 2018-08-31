@@ -27,19 +27,9 @@ def param(
     if metadata is None:
         metadata = {}
     metadata[AUTOSIG_DOCSTRING] = docstring
-    return attrib(
-        default=default,
-        validator=validator,
-        repr=repr,
-        cmp=cmp,
-        hash=hash,
-        init=init,
-        convert=convert,
-        metadata=metadata,
-        type=type,
-        converter=converter,
-        factory=factory,
-    )
+    kwargs = locals()
+    del kwargs['docstring']
+    return attrib(**kwargs)
 
 
 # TODO:fix docs
