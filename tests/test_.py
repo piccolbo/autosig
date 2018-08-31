@@ -2,8 +2,15 @@
 from attr import make_class, asdict
 from autosig import Signature, autosig, param
 from functools import partial
-from hypothesis import given, settings, HealthCheck, unlimited
+from hypothesis import (
+    assume,
+    given,
+    settings,
+    HealthCheck,
+    unlimited,
+)
 from hypothesis.strategies import builds, text, dictionaries, just
+import inspect
 from string import ascii_letters, punctuation
 
 # hypothesis strategy for identifiers
@@ -41,7 +48,8 @@ def signatures():
         make_class,
         name=identifiers(),
         attrs=dictionaries(keys=identifiers(), values=params(), min_size=3),
-        bases=just((Signature, )))
+        bases=just((Signature, )),
+    )
     return a_class
 
 
@@ -57,6 +65,7 @@ def test_decorated_call(sig):
 @given(sig1=signatures(), sig2=signatures())
 def test_decorator_fails(sig1, sig2):
     """Autosig-decorated functions fail on an incompatible signature."""
+    assume(inspect.signature(sig1) != inspect.signature(sig2))
     deco = autosig(sig1)
     try:
         deco(sig2)
@@ -69,6 +78,7 @@ def test_decorator_fails(sig1, sig2):
 @given(sig1=signatures(), sig2=signatures())
 def test_decorated_call_fails(sig1, sig2):
     """Autosig-decorated functions fail on a call with incompatible arguments."""
+    assume(inspect.signature(sig1) != inspect.signature(sig2))
     f = autosig(sig1)(sig1)
     try:
         f(**asdict(sig2()))
