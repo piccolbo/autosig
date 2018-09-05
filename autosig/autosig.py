@@ -1,5 +1,5 @@
 """Implementation of autosig."""
-from attr import attrs as signature
+from attr import attrs
 from attr import attrib, asdict, NOTHING, fields_dict
 from functools import wraps
 import inspect
@@ -12,36 +12,54 @@ AUTOSIG_DOCSTRING = "__autosig_docstring__"
 def param(
         default=NOTHING,
         validator=None,
-        repr=True,
-        cmp=True,
-        hash=None,
-        init=True,
-        convert=None,
-        metadata=None,
-        type=None,
         converter=None,
-        factory=None,
         docstring="",
 ):
-    """See below."""
-    if metadata is None:
-        metadata = {}
+    """Define parameters in a signature class.
+
+    Parameters
+    ----------
+    default : Any
+        The default value for the parameter (defaults to no default, that is mandatory).
+    validator : callable or list thereof
+        A validator for the actual parameter. If list, all element of the list are called. Return value is ignored, only exceptions raised count.
+    converter : callable
+        The callable is executed with the parameter as an argument and its value assigned to the parameter itself. Useful for type conversions, but not only (e.g. limit range of parameter)
+    docstring : string
+        Description of parameter `docstring` (the default is "").
+
+    Notes
+    -----
+    Type annotations will be enforced. This is a thin layer over attrs's attrib().
+
+    Returns
+    -------
+    attr.Attribute
+        Object describing all the properties of the parameter. Can be reused in multiple signature definitions to enforce consistency.
+
+    """
+    metadata = {}
     metadata[AUTOSIG_DOCSTRING] = docstring
     kwargs = locals()
     del kwargs['docstring']
     return attrib(**kwargs)
 
 
-# TODO:fix docs
-param.__doc__ = attrib.__doc__ + """
+def signature(cls):
+    """Decorate class to be used as signature.
 
-   ..  warning::
+    Parameters
+    ----------
+    cls : class
+        The class to use as signature.
 
-        this doc is take straight out of package attr. `param` works exactly
-        like `attrib` but the argument metadata is required to be a dict or
-        equivalent and there is an additional argument `docstring` which
-        contains the docstring for the param being defined, which will be
-        combined with other elements to form complete funcion docstrings. """
+    Returns
+    -------
+    class
+        A class that can be used as signature (passed as argument to autosig).
+
+    """
+    return attrs(cls, cmp=False)
 
 
 @signature
