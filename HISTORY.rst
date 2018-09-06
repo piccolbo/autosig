@@ -2,9 +2,10 @@
 History
 =======
 
-0.4.0 (2018-09-05)
+0.4.1 (2018-09-05)
+------------------
 
-* Close abstraction holes revealing dependency on attr (which is gratefully acknowledged, but could be confusing). 
+* Close abstraction holes revealing dependency on attr (which is gratefully acknowledged, but could be confusing).
 
 0.3.1 (2018-08-30)
 ------------------
