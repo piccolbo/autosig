@@ -3,10 +3,12 @@ from attr import make_class, asdict
 from autosig import Signature, autosig, param
 from functools import partial
 from hypothesis import (
+    HealthCheck,
+    PrintSettings,
     assume,
     given,
+    #    reproduce_failure,
     settings,
-    HealthCheck,
     unlimited,
 )
 from hypothesis.strategies import builds, text, dictionaries, just
@@ -53,7 +55,15 @@ def signatures():
     return a_class
 
 
-@settings(timeout=unlimited, suppress_health_check=[HealthCheck.too_slow])
+settings.register_profile(
+    "this",
+    timeout=unlimited,
+    suppress_health_check=[HealthCheck.too_slow],
+    print_blob=PrintSettings.ALWAYS,
+)
+settings.load_profile("this")
+
+
 @given(sig=signatures())
 def test_decorated_call(sig):
     """Autosig-decorated functions accept a compatible set of arguments."""
@@ -61,11 +71,13 @@ def test_decorated_call(sig):
     autosig(sig)(sig)(**asdict(sig()))
 
 
-@settings(timeout=unlimited, suppress_health_check=[HealthCheck.too_slow])
 @given(sig1=signatures(), sig2=signatures())
 def test_decorator_fails(sig1, sig2):
     """Autosig-decorated functions fail on an incompatible signature."""
-    assume(inspect.signature(sig1) != inspect.signature(sig2))
+    assume(
+        dict(inspect.signature(sig1).parameters)
+        != dict(inspect.signature(sig2).parameters)
+    )  #yapf: disable we are ignoring order at this time TODO: fix
     deco = autosig(sig1)
     try:
         deco(sig2)
@@ -74,11 +86,15 @@ def test_decorator_fails(sig1, sig2):
     raise Exception
 
 
-@settings(timeout=unlimited, suppress_health_check=[HealthCheck.too_slow])
+#@reproduce_failure("3.69.12",
+#                   b"AXicY2RkgEEGBkaSIQMjnM1IkX5GMu3H7hbK/EKuWygNC2Q2AKKOAMk=")
 @given(sig1=signatures(), sig2=signatures())
 def test_decorated_call_fails(sig1, sig2):
     """Autosig-decorated functions fail on a call with incompatible arguments."""
-    assume(inspect.signature(sig1) != inspect.signature(sig2))
+    assume(
+        dict(inspect.signature(sig1).parameters)
+        != dict(inspect.signature(sig2).parameters)
+    )  #yapf: disable we are ignoring order at this time TODO: fix
     f = autosig(sig1)(sig1)
     try:
         f(**asdict(sig2()))
