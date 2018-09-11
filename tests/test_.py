@@ -75,9 +75,8 @@ def test_decorated_call(sig):
 def test_decorator_fails(sig1, sig2):
     """Autosig-decorated functions fail on an incompatible signature."""
     assume(
-        dict(inspect.signature(sig1).parameters)
-        != dict(inspect.signature(sig2).parameters)
-    )  #yapf: disable we are ignoring order at this time TODO: fix
+        inspect.signature(sig1).parameters !=\
+        inspect.signature(sig2).parameters)
     deco = autosig(sig1)
     try:
         deco(sig2)
