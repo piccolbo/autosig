@@ -106,7 +106,7 @@ def autosig(Sig):
             str(f_params),
             str(Sig),
             str(Sig_params)
-        ])
+        ])  # compared as OrderedDicts, retval ignored TODO: support retval?
 
         @wraps(f)
         def wrapped(*args, **kwargs):
