@@ -85,15 +85,15 @@ def test_decorator_fails(sig1, sig2):
     raise Exception
 
 
-#@reproduce_failure("3.69.12",
+# @reproduce_failure("3.69.12",
 #                   b"AXicY2RkgEEGBkaSIQMjnM1IkX5GMu3H7hbK/EKuWygNC2Q2AKKOAMk=")
 @given(sig1=signatures(), sig2=signatures())
 def test_decorated_call_fails(sig1, sig2):
     """Autosig-decorated functions fail on a call with incompatible arguments."""
     assume(
-        dict(inspect.signature(sig1).parameters)
-        != dict(inspect.signature(sig2).parameters)
-    )  #yapf: disable we are ignoring order at this time TODO: fix
+        dict(inspect.signature(sig1).parameters)!=\
+        dict(inspect.signature(sig2).parameters)
+    )  # yapf: disable we are ignoring order at this time TODO: fix
     f = autosig(sig1)(sig1)
     try:
         f(**asdict(sig2()))
