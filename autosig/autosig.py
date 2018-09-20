@@ -14,6 +14,7 @@ def param(
         validator=None,
         converter=None,
         docstring="",
+        kw_only=False,
 ):
     """Define parameters in a signature class.
 
@@ -24,9 +25,12 @@ def param(
     validator : callable or list thereof
         A validator for the actual parameter. If list, all element of the list are called. Return value is ignored, only exceptions raised count.
     converter : callable
-        The callable is executed with the parameter as an argument and its value assigned to the parameter itself. Useful for type conversions, but not only (e.g. limit range of parameter)
+        The callable is executed with the parameter as an argument and its value assigned to the parameter itself. Useful for type conversions, but not only (e.g. limit range of parameter).
     docstring : string
         Description of parameter `docstring` (the default is "").
+    kw_only : bool
+        Whether to make this parameter keyword-only.
+
 
     Notes
     -----
