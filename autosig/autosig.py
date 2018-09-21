@@ -65,27 +65,30 @@ def keyfun(x, l):
 
 
 class Signature:
-    """Class for signatures."""
+    """Class to represent signatures.
+
+    Parameters
+    ----------
+    **params : attr._CountingAttr
+        Each keyword argument becomes an argument in the signature of a function and must be initialized with a param call.
+
+    Returns
+    -------
+    Signature
+        The object created.
+        
+    """
 
     def __init__(self, **params):
-        """.
-
-        Parameters
-        ----------
-        **params : attr._CountingAttr
-            Each keyword argument becomes an argument in the signature of a function and must be initialized with param.
-
-        Returns
-        -------
-        type
-            Description of returned object.
-
-        """
+        """See class docs."""
         self.params = OrderedDict(
             sorted(params.items(), key=keyfun(l=len(params))))
 
     def __add__(self, other):
-        """Combine signatures."""
+        """Combine signatures.
+
+        The resulting signature has the union of the arguments of the left and right operands. The order is determined by the position property of the parameters and when there's a tie, positions are stably sorted with the left operand coming before the right one. One a name clash occurs, the right operand, quite arbitraly, wins. Please do not rely on this behavior, it may change.
+        """
 
         return Signature(
             **OrderedDict(chain(self.params.items(), other.params.items())))
