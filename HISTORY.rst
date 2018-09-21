@@ -2,6 +2,15 @@
 History
 =======
 
+0.5.0 (2018-09-21)
+------------------
+
+* All new API, many breaking changes (sorry)
+* signature decorator is gone
+* create signatures directly withe the Signature constructor (it is no longer a base class to inherit from)
+* do not use inheritance to define new signatures form old ones. It was a dead end as far as controlling the order of arguments. Use instead  the + operator to combine two signatures, analogous to inheriting from one while adding new attributes.
+* the new approach gives control over order of arguments, allows to mix mandatory and default arguments in one signature yet allow to reuse it ("stick" new mandatory arguments in between the arguments of the old signature)
+
 0.4.1 (2018-09-05)
 ------------------
 
