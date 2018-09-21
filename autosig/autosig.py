@@ -1,12 +1,13 @@
 """Implementation of autosig."""
-from attr import attrs
-from attr import attrib, asdict, NOTHING, fields_dict
+from attr import attrib, asdict, NOTHING, fields_dict, make_class
 from functools import wraps
+from itertools import chain
 import inspect
 
-__all__ = ["Signature", "signature", "autosig", "param"]
+__all__ = ["Signature", "autosig", "param"]
 
 AUTOSIG_DOCSTRING = "__autosig_docstring__"
+AUTOSIG_POSITION = "__autosig_position__"
 
 
 def param(
@@ -14,6 +15,7 @@ def param(
         validator=None,
         converter=None,
         docstring="",
+        position=-1,
         kw_only=False,
 ):
     """Define parameters in a signature class.
@@ -21,13 +23,15 @@ def param(
     Parameters
     ----------
     default : Any
-        The default value for the parameter (defaults to no default, that is mandatory).
+        The default value for the parameter (defaults to no default, that is, mandatory).
     validator : callable or list thereof
         A validator for the actual parameter. If list, all element of the list are called. Return value is ignored, only exceptions raised count.
     converter : callable
         The callable is executed with the parameter as an argument and its value assigned to the parameter itself. Useful for type conversions, but not only (e.g. limit range of parameter).
     docstring : string
         Description of parameter `docstring` (the default is "").
+    position : int
+        Desired position of the param in the signature. Negative values start from the end.
     kw_only : bool
         Whether to make this parameter keyword-only.
 
@@ -42,55 +46,58 @@ def param(
         Object describing all the properties of the parameter. Can be reused in multiple signature definitions to enforce consistency.
 
     """
-    metadata = {}
-    metadata[AUTOSIG_DOCSTRING] = docstring
+    metadata = {
+        AUTOSIG_DOCSTRING: docstring,
+        AUTOSIG_POSITION: position,
+    }
     kwargs = locals()
-    del kwargs['docstring']
+    for key in ('docstring', 'position'):
+        del kwargs[key]
     return attrib(**kwargs)
 
 
-def signature(cls):
-    """Decorate class to be used as signature.
-
-    Parameters
-    ----------
-    cls : class
-        The class to use as signature.
-
-    Returns
-    -------
-    class
-        A class that can be used as signature (passed as argument to autosig).
-
-    """
-    return attrs(cls, cmp=False)
-
-
-@signature
 class Signature:
-    """Base class for signatures."""
+    """Class for signatures."""
 
-    def validate(self):
-        """Validate arguments as a whole.
+    def __init__(self, **params):
+        """.
 
-        Per-argument validation is done with `param`
+        Parameters
+        ----------
+        **params : attr._CountingAttr
+            Each keyword argument becomes an argument in the signature of a function and must be initialized with param.
+
+        Returns
+        -------
+        type
+            Description of returned object.
+
         """
-        pass
+        self.params = params
 
-    def default(self):
-        """Provide defaults that depend on the value of other arguments.
+    def __add__(self, other):
+        """Combine signatures."""
+        l = len(self.params) + len(other.params)
 
-        Per-argument defaults are set with `param`
-        """
-        pass
+        def keyfun(x, l=l):
+            pos = x[1].metadata[AUTOSIG_POSITION]
+            return pos if pos >= 0 else l + pos
+
+        return Signature(**dict(
+            sorted(
+                chain(self.params.items(), other.params.items()), key=keyfun)))
 
 
-def autosig(Sig):
+def make_sig_class(sig):
+    return make_class('Sig', attrs=sig.params, cmp=False)
+
+
+def autosig(sig):
     """Decorate  functions to attach signatures.
 
     Parameters
     ----------
-    Sig : A subclass of Signature
+    sig : Signature
         A class with one member per parameter, initialized with a call to param
 
     Returns
@@ -100,6 +107,8 @@ def autosig(Sig):
         validate its arguments.
 
     """
+
+    Sig = make_sig_class(sig)
 
     def decorator(f):
         f_params = inspect.signature(f).parameters

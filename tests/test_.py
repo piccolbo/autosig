@@ -1,6 +1,7 @@
 """Tests for autosig."""
-from attr import make_class, asdict
+from attr import asdict
 from autosig import Signature, autosig, param
+from autosig.autosig import make_sig_class
 from functools import partial
 from hypothesis import (
     HealthCheck,
@@ -11,7 +12,7 @@ from hypothesis import (
     settings,
     unlimited,
 )
-from hypothesis.strategies import builds, text, dictionaries, just
+from hypothesis.strategies import builds, text, dictionaries
 import inspect
 from string import ascii_letters, punctuation
 
@@ -46,13 +47,14 @@ def signatures():
         Strategy to generate signatures.
 
     """
-    a_class = builds(
-        make_class,
-        name=identifiers(),
-        attrs=dictionaries(keys=identifiers(), values=params(), min_size=3),
-        bases=just((Signature, )),
-    )
-    return a_class
+
+    def single_arg_Signature(d):
+        return Signature(**d)
+
+    return builds(single_arg_Signature,
+                  dictionaries(
+                      keys=identifiers(), values=params(), min_size=3))
+    # TODO: we may be able to eliminate the min_size now that we are not making any probabilty assumptions
 
 
 settings.register_profile(
@@ -68,18 +70,21 @@ settings.load_profile("this")
 def test_decorated_call(sig):
     """Autosig-decorated functions accept a compatible set of arguments."""
 
-    autosig(sig)(sig)(**asdict(sig()))
+    Sig = make_sig_class(sig)
+    autosig(sig)(Sig)(**asdict(Sig()))
 
 
 @given(sig1=signatures(), sig2=signatures())
 def test_decorator_fails(sig1, sig2):
     """Autosig-decorated functions fail on an incompatible signature."""
+    Sig1 = make_sig_class(sig1)
+    Sig2 = make_sig_class(sig2)
     assume(
-        inspect.signature(sig1).parameters !=\
-        inspect.signature(sig2).parameters)
+        inspect.signature(Sig1).parameters !=\
+        inspect.signature(Sig2).parameters)
     deco = autosig(sig1)
     try:
-        deco(sig2)
+        deco(Sig2)
     except Exception:
         return
     raise Exception
@@ -90,13 +95,15 @@ def test_decorator_fails(sig1, sig2):
 @given(sig1=signatures(), sig2=signatures())
 def test_decorated_call_fails(sig1, sig2):
     """Autosig-decorated functions fail on a call with incompatible arguments."""
+    Sig1 = make_sig_class(sig1)
+    Sig2 = make_sig_class(sig2)
     assume(
-        dict(inspect.signature(sig1).parameters)!=\
-        dict(inspect.signature(sig2).parameters)
+        dict(inspect.signature(Sig1).parameters)!=\
+        dict(inspect.signature(Sig2).parameters)
     )  # yapf: disable we are ignoring order at this time TODO: fix
-    f = autosig(sig1)(sig1)
+    f = autosig(sig1)(Sig1)
     try:
-        f(**asdict(sig2()))
+        f(**asdict(Sig2()))
     except Exception:
         return
     raise Exception
