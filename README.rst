@@ -24,39 +24,35 @@ Autosig
 
 Autosig allows to create classes that describe signatures of functions and common processing of arguments. This allows to:
 
-* Model functions that share the same signature
+* Model functions that share the same signature with instances of class Signature
 * Model the commonalities between different signatures, e.g. sharing the first few arguments
 * Model common processing normally associated with signatures, such as default values, type checking, validation and conversion, this both at the level of individual arguments and globally for a signature (e.g, check the the first argument is a DataFrame vs. check the that first two arguments are both of the same type)
 
 Since a signature is modeled with class, inheritance can be used to capture commonalities and differences between signatures::
 
  from autosig import *
- # define a class with @signature decorator inheriting from a subclass of
- # Signature (I know, a little redundant in this case)
- # x and y are parameters with no special properties
- @signature
- class BinaryOp(Signature):
-     x = param()
-     y = param()
+ # define a class with Signature x and y are parameters with no special properties
+ binary_op = Signature(
+     x = param(),
+     y = param())
 
  # define a parameter with an int annotation, converting to int if necessary)
- int_param = param(converter=int, type=int)
+ int_param = param(converter=int)
 
  # define another signature with two integer parameters, same annotation and
  # conversion behavior
- @signature
- class BinaryIntOp(BinaryOp):
-     x = int_param
-     y = int_param
+ binary_int_op = Signature(
+     x = int_param,
+     y = int_param)
 
 
  # define a binary operator
- @autosig(sig=BinaryOp)
+ @autosig(binary_op)
  def add(x, y):
      return x + y
 
  # define a binary operator with int parameters
- @autosig(sig=BinaryIntOp)
+ @autosig(binary_int_op)
  def int_add(x, y):
      return x + y
 
