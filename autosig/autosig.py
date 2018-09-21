@@ -1,6 +1,8 @@
 """Implementation of autosig."""
 from attr import attrib, asdict, NOTHING, fields_dict, make_class
+from collections import OrderedDict
 from functools import wraps
+from toolz.functoolz import curry
 from itertools import chain
 import inspect
 
@@ -56,6 +58,12 @@ def param(
     return attrib(**kwargs)
 
 
+@curry
+def keyfun(x, l):
+    pos = x[1].metadata[AUTOSIG_POSITION]
+    return pos if pos >= 0 else l + pos
+
+
 class Signature:
     """Class for signatures."""
 
@@ -73,19 +81,14 @@ class Signature:
             Description of returned object.
 
         """
-        self.params = params
+        self.params = OrderedDict(
+            sorted(params.items(), key=keyfun(l=len(params))))
 
     def __add__(self, other):
         """Combine signatures."""
-        l = len(self.params) + len(other.params)
 
-        def keyfun(x, l=l):
-            pos = x[1].metadata[AUTOSIG_POSITION]
-            return pos if pos >= 0 else l + pos
-
-        return Signature(**dict(
-            sorted(
-                chain(self.params.items(), other.params.items()), key=keyfun)))
+        return Signature(
+            **OrderedDict(chain(self.params.items(), other.params.items())))
 
 
 def make_sig_class(sig):
@@ -125,8 +128,6 @@ def autosig(sig):
         def wrapped(*args, **kwargs):
             params = Sig(
                 **inspect.signature(f).bind(*args, **kwargs).arguments)
-            params.default()
-            params.validate()
             return f(**asdict(params))
 
         wrapped.__doc__ = wrapped.__doc__ or """Short summary.
