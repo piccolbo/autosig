@@ -24,7 +24,10 @@ Autosig
 
 
 
-Autosig helps you write good python 3 APIs.
+Autosig helps you write good python 3 APIs. Go straight to the `documentation <https://autosig.readthedocs.io/en/latest/>`_. Install with ``pip install autosig``. Python 3 only.
+
+Motivation
+----------
 
 When I look at a great API I always observe a great level of consistency: similarly named and ordered arguments at a syntactic level; similar defaults, range of allowable values etc. on the semantic side. When looking at the code, one doesn't see these regularities represented very explicitly.
 
@@ -100,14 +103,33 @@ But this is hardly well crafted. The order and naming of arguments isn't consist
       return (x for x in iterable if function(x))
 
 
-Let's go through it step by step. First we defined 4 simple checking and conversion functions. This is a good first step independent of ``autosig``. Next we create a signature object, with two parameters. These are intialized with complex objects that define the checking and conversion that needs to be done on those parameters, independent of which function is going to use that signature. Finally, we repeat the definition of our three API function, attaching the signature just defined with a decorator and then skipping all the checking and conversion logic and going straight to the meat of the function!
+Let's go through it step by step. First we defined 4 simple checking and conversion functions. This is a good first step independent of ``autosig``. Next we create a signature object, with two parameters. These are intialized with objects that define the checking and conversion that needs to be done on those parameters, independent of which function is going to use that signature. Finally, we repeat the definition of our three API function, attaching the signature just defined with a decorator and then skipping all the checking and conversion logic and going straight to the meat of the function!
 
 At the cost of a little more code we have gained a lot:
 
 * Explicit definition of the desired API signature, in a single place --- DRY principle;
 * association of that signature with API functions, checked at load time --- no room for error;
 * uniform application of conversion and validation logic without repeating it;
-* not shown here, we can also provide defaults and docstrings for each parameter, once and for all subsequent uses;
-* also not shown, we can extend signature objects by adding more arguments, with ordering flexibility.
 
-``autosig`` is the pro tool of the API designer!
+``autosig`` is the pro tool of the API designer! If you want to take a look at a real package that uses ``autosig``, check out `altair_recipes <https://github.com/piccolbo/altair_recipes>`_.
+
+
+Features
+--------
+
+* Define reusable parameters with defaults, conversion and validation logic, documentation, preferred position in the signature and whether keyword-only.
+* Define reusable signatures as ordered maps from names to parameters.
+* Combine signatures to create complex ones on top of simple ones.
+* Decorate functions with their signatures. Enforced at load time. Conversion and validation logic executed at call time.
+
+
+Credits
+-------
+
+This pacakge is heavily based on `attrs<https://github.com/python-attrs/attrs>`_. While that may change in the future, for now it must be said this is a thin layer over that, with a bit of reflection sprinkled over. It is, I suppose, a quite original direction to take ``attrs`` into.
+
+This package was created with Cookiecutter_ and the `elgertam/cookiecutter-pipenv`_ project template, based on `audreyr/cookiecutter-pypackage`_.
+
+.. _Cookiecutter: https://github.com/audreyr/cookiecutter
+.. _`elgertam/cookiecutter-pipenv`: https://github.com/elgertam/cookiecutter-pipenv
+.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
