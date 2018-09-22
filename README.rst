@@ -22,40 +22,92 @@ Autosig
      :alt: Updates
 
 
-Autosig allows to create classes that describe signatures of functions and common processing of arguments. This allows to:
-
-* Model functions that share the same signature with instances of class Signature
-* Model the commonalities between different signatures, e.g. sharing the first few arguments
-* Model common processing normally associated with signatures, such as default values, type checking, validation and conversion, this both at the level of individual arguments and globally for a signature (e.g, check the the first argument is a DataFrame vs. check the that first two arguments are both of the same type)
-
-Since a signature is modeled with class, inheritance can be used to capture commonalities and differences between signatures::
-
- from autosig import *
- # define a class with Signature x and y are parameters with no special properties
- binary_op = Signature(
-     x = param(),
-     y = param())
-
- # define a parameter with an int annotation, converting to int if necessary)
- int_param = param(converter=int)
-
- # define another signature with two integer parameters, same annotation and
- # conversion behavior
- binary_int_op = Signature(
-     x = int_param,
-     y = int_param)
 
 
- # define a binary operator
- @autosig(binary_op)
- def add(x, y):
-     return x + y
+Autosig helps you write good python 3 APIs.
 
- # define a binary operator with int parameters
- @autosig(binary_int_op)
- def int_add(x, y):
-     return x + y
+When I look at a great API I always observe a great level of consistency: similarly named and ordered arguments at a syntactic level; similar defaults, range of allowable values etc. on the semantic side. When looking at the code, one doesn't see these regularities represented very explicitly.
 
- add(2, 3) # 5
- add(2, "3") # fails
- int_add(2, "3") # 5
+Imagine we are starting to develop a library with three entry points, ``map``, ``reduce`` and ``filter``::
+
+  from collections import Iterable
+
+
+  def map(function, iterable):
+      assert callable(function)
+      assert isinstance(iterable, Iterable)
+      return (function(x) for x in iterable)
+
+
+  def reduce(function, iterable):
+      total = next(iterable)
+      for x in iterable:
+          total = function(total, x)
+      return total
+
+
+  def filter(iterable, fun):
+      if not isinstance(iterable, Iterable):
+          iterable = [iterable]
+      if isinstance(fun, set):
+          fun = lambda x: x in fun
+      return (x for x in iterable if fun(x))
+
+
+
+But this is hardly well crafted. The order and naming of arguments isn't consistent. One function checks its argument right away. The next doesn't. The third attempts certain conversions to try and work with arguments that are not iterables or functions. There are reasons to build strict or tolerant APIs, but it's unlikely that mixing the two within the same API is a good idea, unless it's done deliberately (for instance offering a strict and tolerant version of every function). It wouldn't be difficult to fix these problems in this small API but we would end up with duplicated logic that we need to keep aligned for the foreseeable future. Let's do it instead the ``autosig`` way::
+
+  from autosig import param, Signature, autosig
+  from collections import Iterable
+
+
+  def to_callable(x):
+      return (lambda y: y in x) if isinstance(x, set) else x
+
+
+  def check_callable(_, __, x):
+      assert callable(x)
+
+
+  def to_iterable(x):
+      return x if isinstance(x, Iterable) else [x]
+
+
+  def check_iterable(_, __, x):
+      assert isinstance(x, Iterable)
+
+
+  API_signature = Signature(
+      function=param(converter=to_callable, validator=check_callable),
+      iterable=param(converter=to_iterable, validator=check_iterable))
+
+
+  @autosig(API_signature)
+  def map(function, iterable):
+      return (function(x) for x in iterable)
+
+
+  @autosig(API_signature)
+  def reduce(function, iterable):
+      total = next(iterable)
+      for x in iterable:
+          total = function(total, x)
+      return total
+
+
+  @autosig(API_signature)
+  def filter(function, iterable):
+      return (x for x in iterable if function(x))
+
+
+Let's go through it step by step. First we defined 4 simple checking and conversion functions. This is a good first step independent of ``autosig``. Next we create a signature object, with two parameters. These are intialized with complex objects that define the checking and conversion that needs to be done on those parameters, independent of which function is going to use that signature. Finally, we repeat the definition of our three API function, attaching the signature just defined with a decorator and then skipping all the checking and conversion logic and going straight to the meat of the function!
+
+At the cost of a little more code we have gained a lot:
+
+* Explicit definition of the desired API signature, in a single place --- DRY principle;
+* association of that signature with API functions, checked at load time --- no room for error;
+* uniform application of conversion and validation logic without repeating it;
+* not shown here, we can also provide defaults and docstrings for each parameter, once and for all subsequent uses;
+* also not shown, we can extend signature objects by adding more arguments, with ordering flexibility.
+
+``autosig`` is the pro tool of the API designer!
