@@ -69,20 +69,24 @@ class Signature:
 
     Parameters
     ----------
-    **params : attr._CountingAttr
-        Each keyword argument becomes an argument in the signature of a function and must be initialized with a param call.
+    *params : (str, attr.Attribute)
+        Each argument is a pair with the name of an argument in the signature and a desription of it generated with a call to param.
+    **kwparams : attr.Attribute
+        Each keyword argument becomes an argument named after the key in the signature of a function and must be initialized with a param call. Requires python >=3.6. If both *param and **params are provided the first will be concatenated with items of the second, in this order.
 
     Returns
     -------
     Signature
         The object created.
-        
+
     """
 
-    def __init__(self, **params):
+    def __init__(self, *params, **kwparams):
         """See class docs."""
         self.params = OrderedDict(
-            sorted(params.items(), key=keyfun(l=len(params))))
+            sorted(
+                chain(iter(params), kwparams.items()),
+                key=keyfun(l=len(params))))
 
     def __add__(self, other):
         """Combine signatures.
@@ -90,12 +94,34 @@ class Signature:
         The resulting signature has the union of the arguments of the left and right operands. The order is determined by the position property of the parameters and when there's a tie, positions are stably sorted with the left operand coming before the right one. One a name clash occurs, the right operand, quite arbitraly, wins. Please do not rely on this behavior, it may change.
         """
 
-        return Signature(
-            **OrderedDict(chain(self.params.items(), other.params.items())))
+        return Signature(*(chain(self.params.items(), other.params.items())))
+
+
+# class SigBase:
+#     def __init__(self):
+#         self.validations = []
+#         self.defaults = {}
+#
+#     def validate(self):
+#         for val in self.validations:
+#             val(self)
+#
+#     def default(self):
+#         for k, v in self.defaults.items():
+#             setattr(self, k, v(self))
+#
+#     def __attrs_post_init__(self):
+#         self.default()
+#         self.validate()
 
 
 def make_sig_class(sig):
-    return make_class('Sig', attrs=sig.params, cmp=False)
+    return make_class(
+        'Sig',
+        attrs=sig.params,
+        # bases=(SigBase, ),
+        cmp=False,
+    )
 
 
 def autosig(sig):
