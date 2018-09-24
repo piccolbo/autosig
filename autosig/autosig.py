@@ -1,12 +1,19 @@
 """Implementation of autosig."""
-from attr import attrib, asdict, NOTHING, fields_dict, make_class
+from attr import (
+    attrib,
+    asdict,
+    NOTHING,
+    fields_dict,
+    make_class,
+)
 from collections import OrderedDict
 from functools import wraps
-from toolz.functoolz import curry
+from inspect import getsource, signature
 from itertools import chain
-import inspect
+from toolz.functoolz import curry
+from types import BuiltinFunctionType
 
-__all__ = ["Signature", "autosig", "param"]
+__all__ = ["Signature", "autosig", "check", "param"]
 
 AUTOSIG_DOCSTRING = "__autosig_docstring__"
 AUTOSIG_POSITION = "__autosig_position__"
@@ -176,3 +183,43 @@ def autosig(sig):
         return wrapped
 
     return decorator
+
+
+def check(type_or_predicate):
+    """Transform a type or predicate into a autosig-friendly validator.
+
+    Parameters
+    ----------
+    type_or_predicate : type or callable
+        A type or a single argument function returning a bool, indicating whether the check was passed. The function will be passed an argument value when check(function) is used as validator argument to param.
+
+    Returns
+    -------
+    Callable
+        A Callable to be used as validator argument to param.
+
+    """
+    predicate, msg = (
+        (
+            lambda x: isinstance(x, type_or_predicate),
+            "type of {name} = {x} should be {type_or_predicate}, {type_x} found instead",
+        )
+        if isinstance(type_or_predicate, type)
+        else (
+            type_or_predicate,
+            (
+                "{name} called with argument x".format(name=type_or_predicate.__qualname__)
+                if isinstance(type_or_predicate, BuiltinFunctionType)
+                else getsource(type_or_predicate)
+            )
+            + " where x=={x}"))  # yapf: disable
+
+    def f(_, attribute, x):
+        assert predicate(x), msg.format(
+            name=attribute.name,
+            x=x,
+            type_x=type(x),
+            type_or_predicate=type_or_predicate,
+        )
+
+    return f
