@@ -55,12 +55,9 @@ def param(
         Object describing all the properties of the parameter. Can be reused in multiple signature definitions to enforce consistency.
 
     """
-    metadata = {
-        AUTOSIG_DOCSTRING: docstring,
-        AUTOSIG_POSITION: position,
-    }
+    metadata = {AUTOSIG_DOCSTRING: docstring, AUTOSIG_POSITION: position}
     kwargs = locals()
-    for key in ('docstring', 'position'):
+    for key in ("docstring", "position"):
         del kwargs[key]
     return attrib(**kwargs)
 
@@ -76,9 +73,9 @@ class Signature:
 
     Parameters
     ----------
-    *params : (str, attr.Attribute)
+    \*params : (str, attr.Attribute)
         Each argument is a pair with the name of an argument in the signature and a desription of it generated with a call to param.
-    **kwparams : attr.Attribute
+    \*\*kwparams : attr.Attribute
         Each keyword argument becomes an argument named after the key in the signature of a function and must be initialized with a param call. Requires python >=3.6. If both *param and **params are provided the first will be concatenated with items of the second, in this order.
 
     Returns
@@ -124,7 +121,7 @@ class Signature:
 
 def make_sig_class(sig):
     return make_class(
-        'Sig',
+        "Sig",
         attrs=sig.params,
         # bases=(SigBase, ),
         cmp=False,
@@ -150,8 +147,8 @@ def autosig(sig):
     Sig = make_sig_class(sig)
 
     def decorator(f):
-        f_params = inspect.signature(f).parameters
-        Sig_params = inspect.signature(Sig).parameters
+        f_params = signature(f).parameters
+        Sig_params = signature(Sig).parameters
         assert f_params == Sig_params, "\n".join([
             "Mismatched signatures:",
             str(f),
@@ -162,11 +159,10 @@ def autosig(sig):
 
         @wraps(f)
         def wrapped(*args, **kwargs):
-            params = Sig(
-                **inspect.signature(f).bind(*args, **kwargs).arguments)
+            params = Sig(**signature(f).bind(*args, **kwargs).arguments)
             return f(**asdict(params))
 
-        wrapped.__doc__ = wrapped.__doc__ or """Short summary.
+        wrapped.__doc__ = (wrapped.__doc__ or """Short summary.
 
 
             Returns
@@ -174,7 +170,7 @@ def autosig(sig):
             type
                 Description of returned object.
 
-            """
+            """)
         wrapped.__doc__ += "\n\nParameters\n---------\n" + "\n".join([
             k + ": " + v.metadata[AUTOSIG_DOCSTRING]
             for k, v in fields_dict(Sig).items()
