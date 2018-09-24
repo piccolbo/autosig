@@ -1,6 +1,10 @@
 =======
 History
 =======
+0.6.0 (2018-09-24)
+------------------
+
+* Added ``check`` the quick validator generator. ``check(int)`` checks an argument is integer. ``check(\lambda x: x>0)`` checks an argument is positive. Behind the scenes it creates uses an assert statement which hopefully prints a useful message.
 
 0.5.0 (2018-09-21)
 ------------------
