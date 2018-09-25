@@ -4,6 +4,7 @@ from collections import OrderedDict
 from functools import wraps
 from inspect import getsource, signature
 from itertools import chain
+import re
 from toolz.functoolz import curry
 from types import BuiltinFunctionType
 
@@ -151,7 +152,10 @@ def autosig(sig):
 
         @wraps(f)
         def wrapped(*args, **kwargs):
-            params = Sig(**signature(f).bind(*args, **kwargs).arguments)
+            try:
+                params = Sig(**signature(f).bind(*args, **kwargs).arguments)
+            except TypeError as te:
+                raise TypeError(re.sub("__init__", f.__qualname__, te.args[0]))
             return f(**asdict(params))
 
         wrapped.__doc__ = (
