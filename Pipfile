@@ -6,12 +6,15 @@ name = "pypi"
 [packages]
 "e1839a8" = {path = ".", editable = true}
 
-
 [dev-packages]
+black = "*"
 hypothesis = ">=3.69.9"
 pytest = ">=3.7.3"
+pytest-cov = ">=2.6.0"
 twine = ">=1.11.0"
 Sphinx = ">=1.7.8"
-pytest-cov = ">=2.6.0"
 
 [requires]
+
+[pipenv]
+allow_prereleases = true
