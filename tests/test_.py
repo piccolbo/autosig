@@ -20,10 +20,8 @@ from string import ascii_letters, punctuation
 # min_size is 10 to avoid hitting reserved words by mistake
 identifiers = partial(text, alphabet=ascii_letters, min_size=5, max_size=10)
 docstrings = partial(
-    text,
-    alphabet=ascii_letters + punctuation + " \n",
-    min_size=25,
-    max_size=50)
+    text, alphabet=ascii_letters + punctuation + " \n", min_size=25, max_size=50
+)
 
 
 def params():
@@ -51,9 +49,10 @@ def signatures():
     def single_arg_Signature(d):
         return Signature(**d)
 
-    return builds(single_arg_Signature,
-                  dictionaries(
-                      keys=identifiers(), values=params(), min_size=3))
+    return builds(
+        single_arg_Signature,
+        dictionaries(keys=identifiers(), values=params(), min_size=3),
+    )
     # TODO: we may be able to eliminate the min_size now that we are not making any probabilty assumptions
 
 
@@ -79,9 +78,7 @@ def test_decorator_fails(sig1, sig2):
     """Autosig-decorated functions fail on an incompatible signature."""
     Sig1 = make_sig_class(sig1)
     Sig2 = make_sig_class(sig2)
-    assume(
-        inspect.signature(Sig1).parameters !=\
-        inspect.signature(Sig2).parameters)
+    assume(inspect.signature(Sig1).parameters != inspect.signature(Sig2).parameters)
     deco = autosig(sig1)
     try:
         deco(Sig2)
@@ -98,9 +95,9 @@ def test_decorated_call_fails(sig1, sig2):
     Sig1 = make_sig_class(sig1)
     Sig2 = make_sig_class(sig2)
     assume(
-        dict(inspect.signature(Sig1).parameters)!=\
-        dict(inspect.signature(Sig2).parameters)
-    )  # yapf: disable we are ignoring order at this time TODO: fix
+        dict(inspect.signature(Sig1).parameters)
+        != dict(inspect.signature(Sig2).parameters)
+    )  # we are ignoring order at this time TODO: fix
     f = autosig(sig1)(Sig1)
     try:
         f(**asdict(Sig2()))

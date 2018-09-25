@@ -1,11 +1,5 @@
 """Implementation of autosig."""
-from attr import (
-    attrib,
-    asdict,
-    NOTHING,
-    fields_dict,
-    make_class,
-)
+from attr import attrib, asdict, NOTHING, fields_dict, make_class
 from collections import OrderedDict
 from functools import wraps
 from inspect import getsource, signature
@@ -20,12 +14,12 @@ AUTOSIG_POSITION = "__autosig_position__"
 
 
 def param(
-        default=NOTHING,
-        validator=None,
-        converter=None,
-        docstring="",
-        position=-1,
-        kw_only=False,
+    default=NOTHING,
+    validator=None,
+    converter=None,
+    docstring="",
+    position=-1,
+    kw_only=False,
 ):
     """Define parameters in a signature class.
 
@@ -69,7 +63,7 @@ def keyfun(x, l):
 
 
 class Signature:
-    """Class to represent signatures.
+    r"""Class to represent signatures.
 
     Parameters
     ----------
@@ -88,9 +82,8 @@ class Signature:
     def __init__(self, *params, **kwparams):
         """See class docs."""
         self.params = OrderedDict(
-            sorted(
-                chain(iter(params), kwparams.items()),
-                key=keyfun(l=len(params))))
+            sorted(chain(iter(params), kwparams.items()), key=keyfun(l=len(params)))
+        )
 
     def __add__(self, other):
         """Combine signatures.
@@ -152,20 +145,18 @@ def autosig(sig):
     def decorator(f):
         f_params = signature(f).parameters
         Sig_params = signature(Sig).parameters
-        assert f_params == Sig_params, "\n".join([
-            "Mismatched signatures:",
-            str(f),
-            str(f_params),
-            str(Sig),
-            str(Sig_params)
-        ])  # compared as OrderedDicts, retval ignored TODO: support retval?
+        assert f_params == Sig_params, "\n".join(
+            ["Mismatched signatures:", str(f), str(f_params), str(Sig), str(Sig_params)]
+        )  # compared as OrderedDicts, retval ignored TODO: support retval?
 
         @wraps(f)
         def wrapped(*args, **kwargs):
             params = Sig(**signature(f).bind(*args, **kwargs).arguments)
             return f(**asdict(params))
 
-        wrapped.__doc__ = (wrapped.__doc__ or """Short summary.
+        wrapped.__doc__ = (
+            wrapped.__doc__
+            or """Short summary.
 
 
             Returns
@@ -173,11 +164,14 @@ def autosig(sig):
             type
                 Description of returned object.
 
-            """)
-        wrapped.__doc__ += "\n\nParameters\n---------\n" + "\n".join([
-            k + ": " + v.metadata[AUTOSIG_DOCSTRING]
-            for k, v in fields_dict(Sig).items()
-        ])
+            """
+        )
+        wrapped.__doc__ += "\n\nParameters\n---------\n" + "\n".join(
+            [
+                k + ": " + v.metadata[AUTOSIG_DOCSTRING]
+                for k, v in fields_dict(Sig).items()
+            ]
+        )
 
         return wrapped
 
@@ -207,11 +201,15 @@ def check(type_or_predicate):
         else (
             type_or_predicate,
             (
-                "{name} called with argument x".format(name=type_or_predicate.__qualname__)
+                "{name} called with argument x".format(
+                    name=type_or_predicate.__qualname__
+                )
                 if isinstance(type_or_predicate, BuiltinFunctionType)
                 else getsource(type_or_predicate)
             )
-            + " where x=={x}"))  # yapf: disable
+            + " where x=={x}",
+        )
+    )
 
     def f(_, attribute, x):
         assert predicate(x), msg.format(
