@@ -111,7 +111,7 @@ At the cost of a little more code we have gained a lot:
 * association of that signature with API functions, checked at load time --- no room for error;
 * uniform application of conversion and validation logic without repeating it;
 
-``autosig`` is the pro tool of the API designer! If you want to take a look at a real package that uses ``autosig``, check out `altair_recipes <https://github.com/piccolbo/altair_recipes>`_.
+``autosig`` is the pro tool for the API designer! If you want to take a look at a real package that uses ``autosig``, check out `altair_recipes <https://github.com/piccolbo/altair_recipes>`_.
 
 
 Features
@@ -121,6 +121,9 @@ Features
 * Define reusable signatures as ordered maps from names to parameters.
 * Combine signatures to create complex ones on top of simple ones.
 * Decorate functions with their signatures. Enforced at load time. Conversion and validation logic executed at call time.
+* Open source (BSD license)
+* Extensive property-based testing, excellent coverage
+
 
 
 Credits
