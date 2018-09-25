@@ -114,7 +114,7 @@ class Signature:
 
 def make_sig_class(sig):
     return make_class(
-        "Sig",
+        "Sig_" + str(abs(hash(sig))),
         attrs=sig.params,
         # bases=(SigBase, ),
         cmp=False,
