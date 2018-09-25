@@ -8,16 +8,16 @@ from hypothesis import (
     PrintSettings,
     assume,
     given,
-    #    reproduce_failure,
+    # reproduce_failure,
     settings,
     unlimited,
 )
 from hypothesis.strategies import builds, text, dictionaries
-import inspect
+from inspect import signature
 from string import ascii_letters, punctuation
 
 # hypothesis strategy for identifiers
-# min_size is 10 to avoid hitting reserved words by mistake
+# min_size is 5 to avoid hitting reserved words by mistake
 identifiers = partial(text, alphabet=ascii_letters, min_size=5, max_size=10)
 docstrings = partial(
     text, alphabet=ascii_letters + punctuation + " \n", min_size=25, max_size=50
@@ -47,10 +47,8 @@ def signatures():
     """
 
     return builds(
-        lambda x: Signature(**x),
-        dictionaries(keys=identifiers(), values=params(), min_size=3),
+        lambda x: Signature(**x), dictionaries(keys=identifiers(), values=params())
     )
-    # TODO: we may be able to eliminate the min_size now that we are not making any probabilty assumptions
 
 
 settings.register_profile(
@@ -75,7 +73,7 @@ def test_decorator_fails(sig1, sig2):
     """Autosig-decorated functions fail on an incompatible signature."""
     Sig1 = make_sig_class(sig1)
     Sig2 = make_sig_class(sig2)
-    assume(inspect.signature(Sig1).parameters != inspect.signature(Sig2).parameters)
+    assume(signature(Sig1).parameters != signature(Sig2).parameters)
     deco = autosig(sig1)
     try:
         deco(Sig2)
@@ -84,20 +82,25 @@ def test_decorator_fails(sig1, sig2):
     raise Exception
 
 
-# @reproduce_failure("3.69.12",
-#                   b"AXicY2RkgEEGBkaSIQMjnM1IkX5GMu3H7hbK/EKuWygNC2Q2AKKOAMk=")
 @given(sig1=signatures(), sig2=signatures())
 def test_decorated_call_fails(sig1, sig2):
     """Autosig-decorated functions fail on a call with incompatible arguments."""
     Sig1 = make_sig_class(sig1)
     Sig2 = make_sig_class(sig2)
     assume(
-        dict(inspect.signature(Sig1).parameters)
-        != dict(inspect.signature(Sig2).parameters)
-    )  # we are ignoring order at this time TODO: fix
+        not set(signature(Sig2).parameters.keys())
+        <= set(signature(Sig1).parameters.keys())
+    )
+
     f = autosig(sig1)(Sig1)
     try:
         f(**asdict(Sig2()))
     except Exception:
         return
     raise Exception
+
+
+#
+# @given(sig=signatures())
+# def test_argumentless_decorator(sig):
+#     autosig(Sig)(**asdict(Sig()))
