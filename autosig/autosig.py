@@ -144,6 +144,9 @@ def autosig(sig):
 
     """
 
+    assert isinstance(
+        sig, Signature
+    ), "autosig expects a Signature object, {type} foung instead".format(type=type(sig))
     Sig = make_sig_class(sig)
 
     def decorator(f):
