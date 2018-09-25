@@ -46,11 +46,8 @@ def signatures():
 
     """
 
-    def single_arg_Signature(d):
-        return Signature(**d)
-
     return builds(
-        single_arg_Signature,
+        lambda x: Signature(**x),
         dictionaries(keys=identifiers(), values=params(), min_size=3),
     )
     # TODO: we may be able to eliminate the min_size now that we are not making any probabilty assumptions
