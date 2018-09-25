@@ -122,7 +122,7 @@ def make_sig_class(sig):
     )
 
 
-def autosig(sig):
+def autosig(sig_or_f):
     """Decorate  functions to attach signatures.
 
     Parameters
@@ -137,18 +137,30 @@ def autosig(sig):
         validate its arguments.
 
     """
-
-    assert isinstance(
-        sig, Signature
-    ), "autosig expects a Signature object, {type} foung instead".format(type=type(sig))
-    Sig = make_sig_class(sig)
+    argument_deco = isinstance(sig_or_f, Signature)
+    Sig = make_sig_class(
+        (
+            sig_or_f
+            if argument_deco
+            else Signature(
+                *[(k, v.default) for k, v in signature(sig_or_f).parameters.items()]
+            )
+        )
+    )
 
     def decorator(f):
-        f_params = signature(f).parameters
-        Sig_params = signature(Sig).parameters
-        assert f_params == Sig_params, "\n".join(
-            ["Mismatched signatures:", str(f), str(f_params), str(Sig), str(Sig_params)]
-        )  # compared as OrderedDicts, retval ignored TODO: support retval?
+        if argument_deco:
+            f_params = signature(f).parameters
+            Sig_params = signature(Sig).parameters
+            assert f_params == Sig_params, "\n".join(
+                [
+                    "Mismatched signatures:",
+                    str(f),
+                    str(f_params),
+                    str(Sig),
+                    str(Sig_params),
+                ]
+            )  # compared as OrderedDicts, retval ignored TODO: support retval?
 
         @wraps(f)
         def wrapped(*args, **kwargs):
@@ -179,7 +191,7 @@ def autosig(sig):
 
         return wrapped
 
-    return decorator
+    return decorator if argument_deco else decorator(sig_or_f)
 
 
 def check(type_or_predicate):
