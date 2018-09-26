@@ -1,6 +1,6 @@
 """Tests for autosig."""
 from attr import asdict
-from autosig import Signature, autosig, param
+from autosig import Signature, autosig, param, check
 from autosig.autosig import make_sig_class
 from functools import partial
 from hypothesis import (
@@ -14,6 +14,7 @@ from hypothesis import (
 )
 from hypothesis.strategies import builds, text, dictionaries
 from inspect import signature
+from pytest import raises
 from string import ascii_letters, punctuation
 
 # hypothesis strategy for identifiers
@@ -100,7 +101,17 @@ def test_decorated_call_fails(sig1, sig2):
     raise Exception
 
 
-#
-# @given(sig=signatures())
-# def test_argumentless_decorator(sig):
-#     autosig(Sig)(**asdict(Sig()))
+def test_argumentless_decorator():
+    """Non-randomized test for argumentless decorator
+    """
+
+    @autosig
+    def fun(a=param(validator=check(int))):
+        pass
+
+    fun(1)
+    with raises(
+        AssertionError,
+        message="type of a = 1.0 should be <class 'int'>, <class 'float'> found instead",
+    ):
+        fun(1.0)
