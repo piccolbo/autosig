@@ -21,9 +21,6 @@ Introduction to autosig
      :alt: Updates
 
 
-Autosig helps you write good python 3 APIs
-------------------------------------------
-
 Go straight to the `documentation <https://autosig.readthedocs.io/en/latest/>`_. Install with ``pip install autosig``. Python 3 only.
 
 Motivation
