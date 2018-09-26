@@ -1,6 +1,12 @@
 =======
 History
 =======
+
+0.7.0 (2018-09-25)
+------------------
+
+* Argumentless autosig decorator for the use case of reusable parameter definitions but no reusable signatures.
+
 0.6.0 (2018-09-24)
 ------------------
 
