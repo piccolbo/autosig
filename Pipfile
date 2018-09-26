@@ -7,7 +7,6 @@ name = "pypi"
 "e1839a8" = {path = ".", editable = true}
 
 [dev-packages]
-black = "*"
 hypothesis = ">=3.69.9"
 pytest = ">=3.7.3"
 pytest-cov = ">=2.6.0"
@@ -17,4 +16,3 @@ Sphinx = ">=1.7.8"
 [requires]
 
 [pipenv]
-allow_prereleases = true
