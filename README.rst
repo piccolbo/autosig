@@ -1,6 +1,5 @@
-=======
-Autosig
-=======
+Introduction to autosig
+=======================
 
 
 .. image:: https://img.shields.io/pypi/v/autosig.svg
@@ -22,9 +21,10 @@ Autosig
      :alt: Updates
 
 
+Autosig helps you write good python 3 APIs
+------------------------------------------
 
-
-Autosig helps you write good python 3 APIs. Go straight to the `documentation <https://autosig.readthedocs.io/en/latest/>`_. Install with ``pip install autosig``. Python 3 only.
+Go straight to the `documentation <https://autosig.readthedocs.io/en/latest/>`_. Install with ``pip install autosig``. Python 3 only.
 
 Motivation
 ----------
@@ -98,12 +98,14 @@ But this is hardly well crafted. The order and naming of arguments isn't consist
 Let's go through it step by step. First we defined 2 simple conversion
 functions. This is a good first step independent of ``autosig``. Next we create
 a signature object, with two parameters. These are intialized with objects that
-define the checking and conversion that needs to be done on those parameters,
-independent of which function is going to use that signature. ``check`` creates
-a function that uses its argument, a Callable or a type, to validate an
-argument (the callable called with the argument as its own argument must return true; the type must be the type of the argument). Finally, we repeat the definition of our three API function, attaching
-the signature just defined with a decorator and then skipping all the checking
-and conversion logic and going straight to the meat of the function!
+define the checking and conversion that need to be performed on those
+parameters, independent of which function is going to use that signature.
+``check`` creates a function that uses its argument, a Callable or a type, to
+validate an argument (the callable called with the argument as its own argument
+must return true; the type must be the type of the argument). Finally, we repeat
+the definition of our three API function, attaching the signature just defined
+with a decorator and then skipping all the checking and conversion logic and
+going straight to the meat of the function!
 
 At the cost of a little code we have gained a lot:
 
