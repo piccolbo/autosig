@@ -122,8 +122,8 @@ Features
 * Decorate functions with their signatures. Enforced at load time. Conversion and validation logic executed at call time.
 * Not hot about signatures? You can just use parameters as in::
 
-  @autosig
-  def reduce(function = param(...), iterable=param(...)):
+          @autosig
+          def reduce(function = param(...), iterable=param(...)):
 
   for more free-form APIs.
 * Open source (BSD license)
