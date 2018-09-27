@@ -120,7 +120,8 @@ Features
 * Define reusable signatures as ordered maps from names to parameters.
 * Combine signatures to create complex ones on top of simple ones.
 * Decorate functions with their signatures. Enforced at load time. Conversion and validation logic executed at call time.
-* Not hot about signatures? You can just use parameters as in
+* Not hot about signatures? You can just use parameters as in::
+
   @autosig
   def reduce(function = param(...), iterable=param(...)):
 
