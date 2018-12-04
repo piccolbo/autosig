@@ -20,6 +20,10 @@ Introduction to autosig
      :target: https://pyup.io/repos/github/piccolbo/autosig/
      :alt: Updates
 
+.. image:: https://api.codeclimate.com/v1/badges/233681cf64a66ee9c50e/maintainability
+     :target: https://codeclimate.com/github/piccolbo/autosig/maintainability
+     :alt: Maintainability
+
 
 Go straight to the `documentation <https://autosig.readthedocs.io/en/latest/>`_. Install with ``pip install autosig``. Python 3 only.
 
