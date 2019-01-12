@@ -95,24 +95,6 @@ class Signature:
         return Signature(*(chain(self.params.items(), other.params.items())))
 
 
-# class SigBase:
-#     def __init__(self):
-#         self.validations = []
-#         self.defaults = {}
-#
-#     def validate(self):
-#         for val in self.validations:
-#             val(self)
-#
-#     def default(self):
-#         for k, v in self.defaults.items():
-#             setattr(self, k, v(self))
-#
-#     def __attrs_post_init__(self):
-#         self.default()
-#         self.validate()
-
-
 def make_sig_class(sig):
     return make_class(
         "Sig_" + str(abs(hash(sig))),
