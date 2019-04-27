@@ -64,7 +64,7 @@ def keyfun(x, l):
 
 
 class Signature:
-    r"""Class to represent signatures.
+    """Class to represent signatures.
 
     Parameters
     ----------
