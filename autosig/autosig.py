@@ -82,9 +82,8 @@ class Signature:
 
     def __init__(self, *params, **kwparams):
         """See class docs."""
-        self.params = OrderedDict(
-            sorted(chain(iter(params), kwparams.items()), key=keyfun(l=len(params)))
-        )
+        all_params = list(chain(iter(params), kwparams.items()))
+        self.params = OrderedDict(sorted(all_params, key=keyfun(l=len(all_params))))
 
     def __add__(self, other):
         """Combine signatures.
