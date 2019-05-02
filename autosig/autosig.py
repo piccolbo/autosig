@@ -88,7 +88,7 @@ class Signature:
     def __add__(self, other):
         """Combine signatures.
 
-        The resulting signature has the union of the arguments of the left and right operands. The order is determined by the position property of the parameters and when there's a tie, positions are stably sorted with the left operand coming before the right one. One a name clash occurs, the right operand, quite arbitraly, wins. Please do not rely on this behavior, it may change.
+        The resulting signature has the union of the arguments of the left and right operands. The order is determined by the position property of the parameters and when there's a tie, positions are stably sorted with the left operand coming before the right one. Once a name clash occurs, the right operand, quite arbitrarily, wins. Please do not rely on this behavior, it may change.
         """
 
         return Signature(*(chain(self.params.items(), other.params.items())))
