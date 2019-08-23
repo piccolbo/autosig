@@ -115,3 +115,15 @@ def test_argumentless_decorator():
         message="type of a = 1.0 should be <class 'int'>, <class 'float'> found instead",
     ):
         fun(1.0)
+
+
+def test_decorated_method():
+    """Non-randomized test for method decorator
+    """
+
+    class C:
+        @autosig(Signature(a=param(converter=int)))
+        def method(self, a):
+            return a
+
+    assert C().method(1.1) == 1

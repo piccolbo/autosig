@@ -40,10 +40,6 @@ def param(
         Whether to make this parameter keyword-only.
 
 
-    Notes
-    -----
-    Type annotations will be enforced. This is a thin layer over attrs's attrib().
-
     Returns
     -------
     attr.Attribute
@@ -142,8 +138,12 @@ def autosig(sig_or_f):
     )
 
     def decorator(f):
+        # if decorator used on instance method, f is still a func here
+        # hence I special case self arg in the following
+        # will break if regular func has self arg TODO: fix
         if argument_deco:
-            f_params = signature(f).parameters
+            f_params = dict(signature(f).parameters)
+            f_params.pop("self", None)
             Sig_params = signature(Sig).parameters
             assert f_params == Sig_params, "\n".join(
                 [
@@ -158,10 +158,16 @@ def autosig(sig_or_f):
         @wraps(f)
         def wrapped(*args, **kwargs):
             try:
-                params = Sig(**signature(f).bind(*args, **kwargs).arguments)
+                bound_args = signature(f).bind(*args, **kwargs).arguments
+                args_wo_self = bound_args.copy()
+                args_wo_self.pop("self", None)
+                params = Sig(**args_wo_self)
             except TypeError as te:
                 raise TypeError(re.sub("__init__", f.__qualname__, te.args[0]))
-            return f(**asdict(params))
+            param_dict = asdict(params)
+            if "self" in bound_args:
+                param_dict["self"] = bound_args["self"]
+            return f(**param_dict)
 
         wrapped.__doc__ = (
             wrapped.__doc__
