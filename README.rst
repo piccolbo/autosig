@@ -123,7 +123,7 @@ Features
 * Define reusable parameters with defaults, conversion and validation logic, documentation, preferred position in the signature and whether keyword-only.
 * Define reusable signatures as ordered maps from names to parameters.
 * Combine signatures to create complex ones on top of simple ones.
-* Decorate functions with their signatures. Enforced at load time. Conversion and validation logic executed at call time.
+* Decorate functions and methods with their signatures. Enforced at load time. Conversion and validation logic executed at call time.
 * Not hot about signatures? You can just use parameters as in::
 
           @autosig
