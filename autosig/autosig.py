@@ -145,8 +145,8 @@ def autosig(sig_or_f):
             f_params = dict(signature(f).parameters)
             f_params.pop("self", None)
             Sig_params = signature(Sig).parameters
-                assert f_params == Sig_params, "\n".join(
-                    [
+            assert f_params == Sig_params, "\n".join(
+                [
                     "Mismatched signatures:",
                     str(f),
                     str(f_params),
