@@ -102,8 +102,7 @@ def test_decorated_call_fails(sig1, sig2):
 
 
 def test_argumentless_decorator():
-    """Non-randomized test for argumentless decorator
-    """
+    "Non-randomized test for argumentless decorator"
 
     @autosig
     def fun(a=param(validator=check(int))):
@@ -112,7 +111,7 @@ def test_argumentless_decorator():
     fun(1)
     with raises(
         AssertionError,
-        message="type of a = 1.0 should be <class 'int'>, <class 'float'> found instead",
+        match="type of a = 1.0 should be <class 'int'>, <class 'float'> found instead",
     ):
         fun(1.0)
 
