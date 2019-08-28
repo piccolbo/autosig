@@ -100,7 +100,7 @@ def make_sig_class(sig):
 
 
 def autosig(sig_or_f):
-    """Decorate  functions to attach signatures.
+    """Decorate  functions or methods to attach signatures.
 
         Use with (W) or without (WO) an argument:
         @autosig(Signature(a = param(), b=param()))
@@ -111,19 +111,24 @@ def autosig(sig_or_f):
         @autosig
         def fun(a=param(), b=param())
 
+        Do not include the self argument in the signature when decorating
+        methods
+
 
 
     Parameters
     ----------
     sig : Signature of function
-        An instance of class Signature (W) or a function (WO) whose arguments are intialized with a call to param.
+        An instance of class Signature (W) or a function or method (WO) whose
+        arguments are intialized with a call to param.
 
     Returns
     -------
     function
         A decorator (W) or an already decorated function (WO)
         The decorated function, will intialize, convert, and
-        validate its arguments and will include argument docstrings in its docstring.
+        validate its arguments and will include argument docstrings
+        in its docstring.
 
     """
     argument_deco = isinstance(sig_or_f, Signature)
