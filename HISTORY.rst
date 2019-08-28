@@ -2,6 +2,11 @@
 History
 =======
 
+0.8.0 (2019-08-27)
+------------------
+
+* autosig can decorate methods (exclude self from signature)
+
 0.7.0 (2018-09-25)
 ------------------
 
