@@ -2,7 +2,6 @@ autosig package
 ===============
 
 .. automodule:: autosig
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   :members:
+   :undoc-members:
+   :show-inheritance:
