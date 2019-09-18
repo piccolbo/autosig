@@ -64,11 +64,11 @@ Ready to contribute? Here's how to set up `autosig` for local development.
 
     $ git clone git@github.com:your_name_here/autosig.git
 
-3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
+3. Install your local copy into a virtualenv. This is how you set up your fork for local development::
 
-    $ mkvirtualenv autosig
-    $ cd autosig/
-    $ python setup.py develop
+    $ curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python #if needed, or other method to install poetry
+    $ cd autosig
+    $ poetry install
 
 4. Create a branch for local development::
 
@@ -80,10 +80,9 @@ Ready to contribute? Here's how to set up `autosig` for local development.
    tests, including testing other Python versions with tox::
 
     $ flake8 autosig tests
-    $ python setup.py test or py.test
-    $ tox
+    $ make test
+    $ tox # in the works
 
-   To get flake8 and tox, just pip install them into your virtualenv.
 
 6. Commit your changes and push your branch to GitHub::
 
