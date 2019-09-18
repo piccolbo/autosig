@@ -2,6 +2,11 @@
 History
 =======
 
+0.8.1 (2019-09-18)
+------------------
+
+* Switch from pipenv to poetry for development
+
 0.8.0 (2019-08-27)
 ------------------
 
