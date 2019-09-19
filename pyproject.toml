@@ -2,18 +2,14 @@
 authors = ["Antonio Piccolboni <antonio@piccolboni.info>"]
 description = "Define signatures to create beautiful APIs"
 documentation="https://autosig.readthedocs.io/en/latest/"
-license="GNU General Public License v3"
+license="GPL-3.0"
 name = "autosig"
 readme = "README.rst"
 repository="https://github.com/piccolbo/autosig"
 version = "0.8.1"
 classifiers=[
-      "Development Status :: 2 - Pre-Alpha",
+      "Development Status :: 4 - Beta",
       "Intended Audience :: Developers",
-      "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-      "Natural Language :: English",
-      "Programming Language :: Python :: 3.5",
-      "Programming Language :: Python :: 3.6",
   ]
 
 [tool.poetry.dependencies]
