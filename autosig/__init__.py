@@ -14,4 +14,4 @@ __all__ = [
 ]
 __author__ = """Antonio Piccolboni"""
 __email__ = 'autosig@piccolboni.info'
-__version__ = '0.8.1'
+__version__ = '0.8.2'
