@@ -1,6 +1,6 @@
 """Tests for autosig."""
 from attr import asdict
-from autosig import Signature, autosig, param, check
+from autosig import Signature, autosig, param
 from autosig.autosig import make_sig_class
 from functools import partial
 from hypothesis import (
@@ -105,7 +105,7 @@ def test_argumentless_decorator():
     "Non-randomized test for argumentless decorator"
 
     @autosig
-    def fun(a=param(validator=check(int))):
+    def fun(a=param(validator=int)):
         pass
 
     fun(1)

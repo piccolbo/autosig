@@ -28,10 +28,10 @@ def param(
     ----------
     default : Any
         The default value for the parameter (defaults to no default, that is, mandatory).
-    validator : callable or list thereof
-        A validator for the actual parameter. If list, all element of the list are called. Return value is ignored, only exceptions raised count.
+    validator : callable or type
+        If a callable, it takes the actual parameter as an argument, raising an exception if invalid; return value is discarded. If a type, the actual parameter must be instance of that type.
     converter : callable
-        The callable is executed with the parameter as an argument and its value assigned to the parameter itself. Useful for type conversions, but not only (e.g. limit range of parameter).
+        The callable is executed with the parameter as an argument and its value assigned to the parameter itself. Useful for type conversions, but not only (e.g. truncate range of parameter).
     docstring : string
         Description of parameter `docstring` (the default is "").
     position : int
@@ -46,6 +46,8 @@ def param(
         Object describing all the properties of the parameter. Can be reused in multiple signature definitions to enforce consistency.
 
     """
+    if validator is not None:
+        validator = check(validator)
     metadata = {AUTOSIG_DOCSTRING: docstring, AUTOSIG_POSITION: position}
     kwargs = locals()
     for key in ("docstring", "position"):
