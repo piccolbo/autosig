@@ -1,5 +1,5 @@
 """Implementation of autosig."""
-from attr import attrib, asdict, NOTHING, fields_dict, make_class
+from attr import attrib, NOTHING, fields_dict, make_class
 from collections import OrderedDict
 from functools import wraps
 from inspect import getsource, signature
@@ -8,7 +8,7 @@ import re
 from toolz.functoolz import curry
 from types import BuiltinFunctionType
 
-__all__ = ["Signature", "autosig", "check", "param"]
+__all__ = ["Signature", "autosig", "param"]
 
 AUTOSIG_DOCSTRING = "__autosig_docstring__"
 AUTOSIG_POSITION = "__autosig_position__"
@@ -16,8 +16,8 @@ AUTOSIG_POSITION = "__autosig_position__"
 
 def param(
     default=NOTHING,
-    validator=None,
-    converter=None,
+    validator=lambda x: True,
+    converter=lambda x: x,
     docstring="",
     position=-1,
     kw_only=False,
@@ -29,7 +29,7 @@ def param(
     default : Any
         The default value for the parameter (defaults to no default, that is, mandatory).
     validator : callable or type
-        If a callable, it takes the actual parameter as an argument, raising an exception if invalid; return value is discarded. If a type, the actual parameter must be instance of that type.
+        If a callable, it takes the actual parameter as an argument, raising an exception or returning False if invalid; returning True otherwise. If a type, the actual parameter must be instance of that type.
     converter : callable
         The callable is executed with the parameter as an argument and its value assigned to the parameter itself. Useful for type conversions, but not only (e.g. truncate range of parameter).
     docstring : string
@@ -46,8 +46,7 @@ def param(
         Object describing all the properties of the parameter. Can be reused in multiple signature definitions to enforce consistency.
 
     """
-    if validator is not None:
-        validator = check(validator)
+    validator = check(validator)
     metadata = {AUTOSIG_DOCSTRING: docstring, AUTOSIG_POSITION: position}
     kwargs = locals()
     for key in ("docstring", "position"):
@@ -67,7 +66,7 @@ class Signature:
     Parameters
     ----------
     \*params : (str, attr.Attribute)
-        Each argument is a pair with the name of an argument in the signature and a desription of it generated with a call to param.
+        Each argument is a pair with the name of an argument in the signature and a description of it generated with a call to param.
     \*\*kwparams : attr.Attribute
         Each keyword argument becomes an argument named after the key in the signature of a function and must be initialized with a param call. Requires python >=3.6. If both *param and **params are provided the first will be concatenated with items of the second, in this order.
 
@@ -82,6 +81,7 @@ class Signature:
         """See class docs."""
         all_params = list(chain(iter(params), kwparams.items()))
         self.params = OrderedDict(sorted(all_params, key=keyfun(l=len(all_params))))
+        self._late_init = lambda x: x
 
     def __add__(self, other):
         """Combine signatures.
@@ -89,7 +89,33 @@ class Signature:
         The resulting signature has the union of the arguments of the left and right operands. The order is determined by the position property of the parameters and when there's a tie, positions are stably sorted with the left operand coming before the right one. Once a name clash occurs, the right operand, quite arbitrarily, wins. Please do not rely on this behavior, it may change.
         """
 
-        return Signature(*(chain(self.params.items(), other.params.items())))
+        return Signature(
+            *(chain(self.params.items(), other.params.items()))
+        ).set_late_init(
+            lambda param_dict: (
+                self._late_init(param_dict),
+                other._late_init(param_dict),
+            )
+        )
+
+    def set_late_init(self, init):
+        """Set a function to be called immediately after all arguments have been initialized.
+
+        Use this function to perform initialization logic that involves multiple arguments in the signature.
+
+        Parameters
+        ----------
+        init : FunctionType
+            The init function is called after the initialization of all arguments in the signature but before the execution of the body of a function with that signature and is passed as an argument a dictionary with all arguments of the function. Returns None and acts exclusively by side effects.
+
+        Returns
+        -------
+        Signature
+            Returns self.
+
+        """
+        self._late_init = init
+        return self
 
 
 def make_sig_class(sig):
@@ -171,7 +197,9 @@ def autosig(sig_or_f):
                 params = Sig(**args_wo_self)
             except TypeError as te:
                 raise TypeError(re.sub("__init__", f.__qualname__, te.args[0]))
-            param_dict = asdict(params)
+            param_dict = params.__dict__
+            if argument_deco:
+                sig_or_f._late_init(param_dict)
             if "self" in bound_args:
                 param_dict["self"] = bound_args["self"]
             return f(**param_dict)

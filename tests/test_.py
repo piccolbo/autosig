@@ -101,6 +101,12 @@ def test_decorated_call_fails(sig1, sig2):
     raise Exception
 
 
+@given(sig1=signatures(), sig2=signatures())
+def test_signature_addition(sig1, sig2):
+    """Combine two signatures"""
+    assert (sig1 + sig2).params == dict(sig1.params, **sig2.params)
+
+
 def test_argumentless_decorator():
     "Non-randomized test for argumentless decorator"
 
