@@ -5,4 +5,4 @@ from .autosig import Signature, autosig, param
 __all__ = ["Signature", "autosig", "param"]
 __author__ = """Antonio Piccolboni"""
 __email__ = "autosig@piccolboni.info"
-__version__ = "0.8.2"
+__version__ = "__version__ = '0.9.0'"
