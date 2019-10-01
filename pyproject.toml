@@ -6,7 +6,7 @@ license="GPL-3.0"
 name = "autosig"
 readme = "README.rst"
 repository="https://github.com/piccolbo/autosig"
-version = "0.9.0"
+version = "0.9.1"
 classifiers=[
       "Development Status :: 4 - Beta",
       "Intended Audience :: Developers",
