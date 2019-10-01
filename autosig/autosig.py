@@ -138,14 +138,15 @@ def make_sig_class(sig):
 def autosig(sig_or_f):
     """Decorate  functions or methods to attach signatures.
 
-        Use with (W) or without (WO) an argument:
-        @autosig(Signature(a = param(), b=param()))
-        def fun(a, b)
+        Use with (W) or without (WO) an argument::
 
-        or, equivlently,
+            @autosig(Signature(a = param(), b=param()))
+            def fun(a, b)
 
-        @autosig
-        def fun(a=param(), b=param())
+        or, equivlently (WO)::
+
+            @autosig
+            def fun(a=param(), b=param())
 
         Do not include the self argument in the signature when decorating
         methods
