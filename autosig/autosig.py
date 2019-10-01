@@ -14,10 +14,18 @@ AUTOSIG_DOCSTRING = "__autosig_docstring__"
 AUTOSIG_POSITION = "__autosig_position__"
 
 
+def always_valid(x):
+    return True
+
+
+def identity(x):
+    return x
+
+
 def param(
     default=NOTHING,
-    validator=lambda x: True,
-    converter=lambda x: x,
+    validator=always_valid,
+    converter=identity,
     docstring="",
     position=-1,
     kw_only=False,
@@ -81,7 +89,7 @@ class Signature:
         """See class docs."""
         all_params = list(chain(iter(params), kwparams.items()))
         self.params = OrderedDict(sorted(all_params, key=keyfun(l=len(all_params))))
-        self._late_init = lambda x: x
+        self._late_init = identity
 
     def __add__(self, other):
         """Combine signatures.
