@@ -2,6 +2,13 @@
 History
 =======
 
+
+0.9.0 (2019-10-1)
+-----------------
+
+* Single argument validators.
+* Late init feature for signatures.
+
 0.8.2 (2019-09-18)
 ------------------
 

@@ -74,8 +74,8 @@ But this is hardly well crafted. The order and naming of arguments isn't consist
 
 
   API_signature = Signature(
-      function=param(converter=to_callable, validator=check(callable)),
-      iterable=param(converter=to_iterable, validator=check(Iterable)))
+      function=param(converter=to_callable, validator=callable),
+      iterable=param(converter=to_iterable, validator=Iterable))
 
 
   @autosig(API_signature)
@@ -101,9 +101,7 @@ functions. This is a good first step independent of ``autosig``. Next we create
 a signature object, with two parameters. These are intialized with objects that
 define the checking and conversion that need to be performed on those
 parameters, independent of which function is going to use that signature.
-``check`` creates a function that uses its argument, a Callable or a type, to
-validate an argument (the callable called with the argument as its own argument
-must return true; the type must be the type of the argument). Finally, we repeat
+A type works as a validator, as does any callable that returns `True` when a value is valid, returns `False` or raises an exception otherwise. Finally, we repeat
 the definition of our three API function, attaching the signature just defined
 with a decorator and then skipping all the checking and conversion logic and
 going straight to the meat of the function!
