@@ -131,7 +131,8 @@ def make_sig_class(sig):
         "Sig_" + str(abs(hash(sig))),
         attrs=sig.params,
         # bases=(SigBase, ),
-        cmp=False,
+        eq=False,
+        order=False,
     )
 
 
