@@ -87,6 +87,7 @@ class Signature:
 
     def __init__(self, *params, **kwparams):
         """See class docs."""
+        assert all(map(lambda x: len(x) == 2, params)), "Non keyword args must be pairs"
         all_params = list(chain(iter(params), kwparams.items()))
         self.params = OrderedDict(sorted(all_params, key=keyfun(l=len(all_params))))
         self._late_init = identity
