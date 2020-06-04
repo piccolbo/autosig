@@ -130,6 +130,13 @@ class Signature:
 
     def __init__(self, *params, **kwparams):
         """See class docs."""
+        # grab retval id any
+        if len(params) > 0 and isinstance(params[0], Retval):
+            self._retval = params[0]
+            params = params[1:]
+        else:
+            self._retval = None
+
         assert all(map(lambda x: len(x) == 2, params)), "Non keyword args must be pairs"
         all_params = list(chain(iter(params), kwparams.items()))
         self.params = OrderedDict(sorted(all_params, key=keyfun(l=len(all_params))))
