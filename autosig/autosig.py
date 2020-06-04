@@ -83,7 +83,7 @@ def param(
     converter : callable
         The callable is executed with the parameter as an argument and its value assigned to the parameter itself. Useful for type conversions, but not only (e.g. truncate range of parameter).
     docstring : string
-        Description of parameter `docstring` (the default is "").
+        The docstring fragment for this parameter.
     position : int
         Desired position of the param in the signature. Negative values start from the end.
     kw_only : bool
