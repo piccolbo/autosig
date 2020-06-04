@@ -139,7 +139,7 @@ class Signature:
 
         assert all(map(lambda x: len(x) == 2, params)), "Non keyword args must be pairs"
         all_params = list(chain(iter(params), kwparams.items()))
-        self.params = OrderedDict(sorted(all_params, key=keyfun(l=len(all_params))))
+        self._params = OrderedDict(sorted(all_params, key=keyfun(l=len(all_params))))
         self._late_init = identity
 
     def __add__(self, other):
@@ -156,7 +156,7 @@ class Signature:
         # must return compatible retvals to combine, or at most one of the two returns anything
         retval = self._retval if self._retval is not None else other._retval
         return Signature(
-            *(chain(self.params.items(), other.params.items()))
+            *(chain(self._params.items(), other._params.items()))
         ).set_late_init(
             lambda param_dict: (
                 self._late_init(param_dict),
@@ -205,7 +205,7 @@ class Signature:
 def make_sig_class(sig):
     return make_class(
         "Sig_" + str(abs(hash(sig))),
-        attrs=sig.params,
+        attrs=sig._params,
         # bases=(SigBase, ),
         eq=False,
         order=False,
