@@ -111,12 +111,13 @@ def keyfun(x, l):
 
 
 class Signature:
-    """Class to represent signatures.
+    r"""Class to represent signatures.
 
     Parameters
     ----------
     \*params : (str, attr.Attribute)
-        Each argument is a pair with the name of an argument in the signature and a description of it generated with a call to param.
+        Optional first non-pair argument describes the return value.
+        Each following argument is a pair with the name of an argument in the signature and a description of it generated with a call to param.
     \*\*kwparams : attr.Attribute
         Each keyword argument becomes an argument named after the key in the signature of a function and must be initialized with a param call. Requires python >=3.6. If both *param and **params are provided the first will be concatenated with items of the second, in this order.
 
