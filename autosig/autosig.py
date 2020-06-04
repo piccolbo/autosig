@@ -96,7 +96,7 @@ def param(
         Object describing all the properties of the parameter. Can be reused in multiple signature definitions to enforce consistency.
 
     """
-    validator = check(validator)
+    validator = check(validator, is_retval=False)
     metadata = {AUTOSIG_DOCSTRING: docstring, AUTOSIG_POSITION: position}
     kwargs = locals()
     for key in ("docstring", "position"):
@@ -281,7 +281,7 @@ def autosig(sig_or_f):
     return decorator if argument_deco else decorator(sig_or_f)
 
 
-def check(type_or_predicate):
+def check(type_or_predicate, is_retval):
     """Transform a type or predicate into a autosig-friendly validator.
 
     Parameters
@@ -295,31 +295,41 @@ def check(type_or_predicate):
         A Callable to be used as validator argument to param.
 
     """
+    is_type = isinstance(type_or_predicate, type)
     predicate, msg = (
         (
             lambda x: isinstance(x, type_or_predicate),
-            "type of {name} = {x} should be {type_or_predicate}, {type_x} found instead",
+            "type of {name} = {value} should be {expected_type}, {actual_type} found instead",
         )
-        if isinstance(type_or_predicate, type)
-        else (
-            type_or_predicate,
-            (
-                "{name} called with argument x".format(
-                    name=type_or_predicate.__qualname__
-                )
-                if isinstance(type_or_predicate, BuiltinFunctionType)
-                else getsource(type_or_predicate)
-            )
-            + " where x=={x}",
-        )
+        if is_type
+        else (type_or_predicate, "{name} = {value} should satisfy {predicate}")
     )
 
-    def f(_, attribute, x):
+    def f(_, attribute=None, x=None):
+        if is_retval:
+            x = _
+            name = "return value"
+        else:
+            name = attribute.name
+        assert predicate(x), (
+            msg.format(
+                name=name, value=x, expected_type=type_or_predicate, actual_type=type(x)
+            )
+            if is_type
+            else msg.format(
+                name=name,
+                value=x,
+                predicate=type_or_predicate.__qualname__
+                if type_or_predicate.__qualname__ != "<lambda>"
+                else getsource(type_or_predicate),
+            )
+        )
+
+    def g(x):
         assert predicate(x), msg.format(
-            name=attribute.name,
-            x=x,
-            type_x=type(x),
+            item="return value",
+            actual_type=type(x),
             type_or_predicate=type_or_predicate,
         )
 
-    return f
+    return g if is_retval else f
