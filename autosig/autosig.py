@@ -168,6 +168,24 @@ class Signature:
         self._late_init = init
         return self
 
+    def __call__(self, f):
+        """Decorate function f with signature.
+
+        Makes class directly usable as decorator
+
+        Parameters
+        ----------
+        f : Function or method
+            Function or method to be decorated.
+
+        Returns
+        -------
+        Function
+            A function decorated with this signature executing and returning values returned by f.
+
+        """
+        return autosig(self)(f)
+
 
 def make_sig_class(sig):
     return make_class(
