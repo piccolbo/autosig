@@ -103,12 +103,12 @@ def test_decorated_call_fails(sig1, sig2):
 
 @given(sig1=signatures(), sig2=signatures())
 def test_signature_addition(sig1, sig2):
-    """Combine two signatures"""
-    assert (sig1 + sig2).params == dict(sig1.params, **sig2.params)
+    """Combine two signatures."""
+    assert (sig1 + sig2)._params == dict(sig1._params, **sig2._params)
 
 
 def test_argumentless_decorator():
-    "Non-randomized test for argumentless decorator"
+    """Non-randomized test for argumentless decorator."""
 
     @autosig
     def fun(a=param(validator=int)):
@@ -123,8 +123,7 @@ def test_argumentless_decorator():
 
 
 def test_decorated_method():
-    """Non-randomized test for method decorator
-    """
+    """Non-randomized test for method decorator."""
 
     class C:
         @autosig(Signature(a=param(converter=int)))
