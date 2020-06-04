@@ -8,7 +8,7 @@ import re
 from toolz.functoolz import curry
 from types import BuiltinFunctionType
 
-__all__ = ["Signature", "autosig", "param"]
+__all__ = ["Signature", "autosig", "param", "Retval"]
 
 AUTOSIG_DOCSTRING = "__autosig_docstring__"
 AUTOSIG_POSITION = "__autosig_position__"
@@ -20,6 +20,48 @@ def always_valid(x):
 
 def identity(x):
     return x
+
+
+class Retval:
+    """Define return values in a Signature class.
+
+    Parameters
+    ----------
+    validator : callable or type
+        If a callable, it takes the return value as an argument, raising an exception or returning False if invalid; returning True otherwise. If a type, the return value must be an instance of that type.
+    converter : callable
+        The callable is executed with the return value as an argument and its return value is returned instead. Useful to enforce properties of return values, e.g. type, but not only.
+    docstring : string
+        The content for the docstring Returns section.
+
+
+    """
+
+    def __init__(self, validator=always_valid, converter=identity, docstring=""):
+        """See class docs."""
+        self._validator = check(validator, is_retval=True)
+        self._converter = converter
+        self._docstring = docstring
+
+    def __call__(self, x):
+        """Execute converter and validator with x as argument.
+
+        Returns converter(x) if validator and converter succeed, raises an exception otherwise.
+
+        Parameters
+        ----------
+        x : Any
+            The return value of the autosig-decorated function.
+
+        Returns
+        -------
+        Any
+            The return value of converter(x).
+
+        """
+        x = self._converter(x)
+        assert self._validator(x)
+        return x
 
 
 def param(
