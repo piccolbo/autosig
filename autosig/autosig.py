@@ -232,7 +232,7 @@ def autosig(sig_or_f):
 
     Parameters
     ----------
-    sig : Signature of function
+    sig_or_f : Signature or function
         An instance of class Signature (W) or a function or method (WO) whose
         arguments are intialized with a call to param.
 
@@ -254,6 +254,16 @@ def autosig(sig_or_f):
                 *[(k, v.default) for k, v in signature(sig_or_f).parameters.items()]
             )
         )
+    )
+    retval_sig = (
+        sig_or_f._retval
+        if argument_deco and sig_or_f._retval is not None
+        else lambda x: x
+    )
+    retval_docstring = (
+        sig_or_f._retval._docstring
+        if argument_deco and sig_or_f._retval is not None
+        else ""
     )
 
     def decorator(f):
@@ -288,17 +298,13 @@ def autosig(sig_or_f):
                 sig_or_f._late_init(param_dict)
             if "self" in bound_args:
                 param_dict["self"] = bound_args["self"]
-            return f(**param_dict)
+            retval = f(**param_dict)
+            return retval_sig(retval)
 
         wrapped.__doc__ = (
             wrapped.__doc__
             or """Short summary.
 
-
-            Returns
-            -------
-            type
-                Description of returned object.
 
             """
         )
@@ -308,7 +314,13 @@ def autosig(sig_or_f):
                 for k, v in fields_dict(Sig).items()
             ]
         )
-
+        wrapped.__doc__ += "\n\nReturns\n-------\n" + (
+            retval_docstring
+            if retval_docstring
+            else """     type
+                        Description of returned object.
+                """
+        )
         return wrapped
 
     return decorator if argument_deco else decorator(sig_or_f)
