@@ -148,6 +148,13 @@ class Signature:
         The resulting signature has the union of the arguments of the left and right operands. The order is determined by the position property of the parameters and when there's a tie, positions are stably sorted with the left operand coming before the right one. Once a name clash occurs, the right operand, quite arbitrarily, wins. Please do not rely on this behavior, it may change.
         """
 
+        assert (
+            self._retval is None
+            or other._retval is None
+            or self._retval == other._retval
+        )
+        # must return compatible retvals to combine, or at most one of the two returns anything
+        retval = self._retval if self._retval is not None else other._retval
         return Signature(
             *(chain(self.params.items(), other.params.items()))
         ).set_late_init(
