@@ -1,6 +1,6 @@
 """Tests for autosig."""
 from attr import asdict
-from autosig import Signature, autosig, param
+from autosig import Signature, autosig, param, Retval
 from autosig.autosig import make_sig_class
 from functools import partial
 from hypothesis import (
@@ -23,6 +23,18 @@ docstrings = partial(
 )
 
 
+def retvals():
+    """Generate Retvals.
+
+    Returns
+    -------
+    Hypothesis strategy
+        Strategy to generate Retvals.
+
+    """
+    return builds(Retval, docstring=docstrings())
+
+
 def params():
     """Generate params.
 
@@ -35,7 +47,7 @@ def params():
     return builds(param, default=text(), docstring=docstrings())
 
 
-def signatures():
+def signatures(with_retval=True):
     """Generate signatures.
 
     Returns
@@ -45,8 +57,17 @@ def signatures():
 
     """
 
-    return builds(
-        lambda x: Signature(**x), dictionaries(keys=identifiers(), values=params())
+    return (
+        builds(
+            lambda r, x: Signature(r, **x),
+            r=retvals(),
+            x=dictionaries(keys=identifiers(), values=params()),
+        )
+        if with_retval
+        else builds(
+            lambda x: Signature(**x),
+            x=dictionaries(keys=identifiers(), values=params()),
+        )
     )
 
 
@@ -96,7 +117,7 @@ def test_decorated_call_fails(sig1, sig2):
     raise Exception
 
 
-@given(sig1=signatures(), sig2=signatures())
+@given(sig1=signatures(), sig2=signatures(with_retval=False))
 def test_signature_addition(sig1, sig2):
     """Combine two signatures."""
     assert (sig1 + sig2)._params == dict(sig1._params, **sig2._params)
