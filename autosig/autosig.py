@@ -342,40 +342,33 @@ def check(type_or_predicate, is_retval):
 
     """
     is_type = isinstance(type_or_predicate, type)
-    predicate, msg = (
-        (
-            lambda x: isinstance(x, type_or_predicate),
-            "type of {name} = {value} should be {expected_type}, {actual_type} found instead",
-        )
-        if is_type
-        else (type_or_predicate, "{name} = {value} should satisfy {predicate}")
+    predicate = (
+        lambda x: isinstance(x, type_or_predicate) if is_type else type_or_predicate
     )
 
-    def f(_, attribute=None, x=None):
-        if is_retval:
-            x = _
-            name = "return value"
-        else:
-            name = attribute.name
-        assert predicate(x), (
-            msg.format(
-                name=name, value=x, expected_type=type_or_predicate, actual_type=type(x)
-            )
+    def msg(name, value):
+        predicate_desc = (
+            type_or_predicate
             if is_type
-            else msg.format(
-                name=name,
-                value=x,
-                predicate=type_or_predicate.__qualname__
+            else (
+                type_or_predicate.__qualname__
                 if type_or_predicate.__qualname__ != "<lambda>"
-                else getsource(type_or_predicate),
+                else getsource(type_or_predicate)
             )
         )
-
-    def g(x):
-        assert predicate(x), msg.format(
-            item="return value",
-            actual_type=type(x),
-            type_or_predicate=type_or_predicate,
+        m = (
+            "type of {name} = {value} should be {predicate_desc}, {type} found instead"
+            if is_type
+            else "{name} = {value} should satisfy {predicate_desc}"
+        )
+        return m.format(
+            name=name, value=value, type=type(value), predicate_desc=predicate_desc
         )
 
-    return g if is_retval else f
+    def f_param(_, attribute=None, x=None):
+        assert predicate(x), msg(name=attribute.name, value=x)
+
+    def f_retval(x):
+        assert predicate(x), msg(name="return value", value=x)
+
+    return f_retval if is_retval else f_param
