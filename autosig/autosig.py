@@ -60,7 +60,7 @@ class Retval:
 
         """
         x = self._converter(x)
-        assert self._validator(x)
+        self._validator(x)
         return x
 
 
