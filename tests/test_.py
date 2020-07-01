@@ -82,7 +82,7 @@ def test_decorated_call(sig):
     """Autosig-decorated functions accept a compatible set of arguments."""
 
     Sig = make_sig_class(sig)
-    autosig(sig)(Sig)(**asdict(Sig()))
+    sig(Sig)(**asdict(Sig()))
 
 
 @given(sig1=signatures(), sig2=signatures())
@@ -91,7 +91,7 @@ def test_decorator_fails(sig1, sig2):
     Sig1 = make_sig_class(sig1)
     Sig2 = make_sig_class(sig2)
     assume(signature(Sig1).parameters != signature(Sig2).parameters)
-    deco = autosig(sig1)
+    deco = sig1
     try:
         deco(Sig2)
     except Exception:
@@ -109,7 +109,7 @@ def test_decorated_call_fails(sig1, sig2):
         <= set(signature(Sig1).parameters.keys())
     )
 
-    f = autosig(sig1)(Sig1)
+    f = sig1(Sig1)
     try:
         f(**asdict(Sig2()))
     except Exception:
@@ -142,7 +142,7 @@ def test_decorated_method():
     """Non-randomized test for method decorator."""
 
     class C:
-        @autosig(Signature(a=param(converter=int)))
+        @Signature(a=param(converter=int))
         def method(self, a):
             return a
 

@@ -12,7 +12,7 @@ To define a signature::
 
 To associate that signature with a function::
 
-    @autosig(api_sig)
+    @api_sig
     def entry_point(x=0)
         # signature executed here, in this case int conversion
         return x
@@ -20,7 +20,7 @@ To associate that signature with a function::
 The same works with methods, just leave the self argument out::
 
     class C:
-        @autosig(api_sig)
+        @api_sig
         def entry_point(self, x=0)
             # signature executed here, in this case int conversion
             return x
@@ -43,4 +43,4 @@ You can skip signatures altogehter and just capture commonalities between argume
         return x + y
 
 
-``param`` allows you to define a number of properties or behaviours of function arguments: validator, converter, docstring, default value, position,
+``param`` allows you to define a number of properties or behaviours of function arguments: validator, converter, docstring, default value, position; ``Retval``, which defines properties of return values, allows to specify only the first three.

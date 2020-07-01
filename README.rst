@@ -78,12 +78,12 @@ But this is hardly well crafted. The order and naming of arguments isn't consist
       iterable=param(converter=to_iterable, validator=Iterable))
 
 
-  @autosig(API_signature)
+  @API_signature
   def map(function, iterable):
       return (function(x) for x in iterable)
 
 
-  @autosig(API_signature)
+  @API_signature
   def reduce(function, iterable):
       total = next(iterable)
       for x in iterable:
@@ -91,7 +91,7 @@ But this is hardly well crafted. The order and naming of arguments isn't consist
       return total
 
 
-  @autosig(API_signature)
+  @API_signature
   def filter(function, iterable):
       return (x for x in iterable if function(x))
 
