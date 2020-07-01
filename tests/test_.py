@@ -5,12 +5,10 @@ from autosig.autosig import make_sig_class
 from functools import partial
 from hypothesis import (
     HealthCheck,
-    PrintSettings,
     assume,
     given,
     # reproduce_failure,
     settings,
-    unlimited,
 )
 from hypothesis.strategies import builds, text, dictionaries
 from inspect import signature
@@ -53,10 +51,7 @@ def signatures():
 
 
 settings.register_profile(
-    "this",
-    timeout=unlimited,
-    suppress_health_check=[HealthCheck.too_slow],
-    print_blob=PrintSettings.ALWAYS,
+    "this", deadline=None, suppress_health_check=[HealthCheck.too_slow], print_blob=True
 )
 settings.load_profile("this")
 
