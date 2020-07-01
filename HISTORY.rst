@@ -2,6 +2,10 @@
 History
 =======
 
+0.10.0 (2020-7-1)
+-----------------
+
+* Support for return values in signatures
 
 0.9.2 (2019-10-1)
 -----------------

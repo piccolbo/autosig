@@ -8,7 +8,7 @@ To use autosig in a project::
 
 To define a signature::
 
-    api_sig = Signture(x = param(default=0, converter=int))
+    api_sig = Signature(x = param(default=0, converter=int))
 
 To associate that signature with a function::
 
@@ -28,6 +28,10 @@ The same works with methods, just leave the self argument out::
 Simple signatures can be combined to for more complex ones::
 
     sig = Signature(x=param())+Signature(y=param())
+
+Signatures can now include return values::
+
+    api_sig = Signature(Retval(validator=int), x = param(default=0, converter=int))
 
 You can skip signatures altogehter and just capture commonalities between arguments with the argumentless form of the decorator::
 

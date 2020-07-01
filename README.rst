@@ -119,7 +119,8 @@ Features
 --------
 
 * Define reusable parameters with defaults, conversion and validation logic, documentation, preferred position in the signature and whether keyword-only.
-* Define reusable signatures as ordered maps from names to parameters.
+* Define reusable return values with conversion and validation logic and documentation.
+* Define reusable signatures as ordered maps from names to parameters with optional return value definition.
 * Combine signatures to create complex ones on top of simple ones.
 * Decorate functions and methods with their signatures. Enforced at load time. Conversion and validation logic executed at call time.
 * Not hot about signatures? You can just use parameters as in::
